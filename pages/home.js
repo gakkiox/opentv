@@ -1,7 +1,6 @@
-
-
 import React from "react";
 import { Text, View, Button, StyleSheet, ScrollView, Image } from "react-native";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 class Home extends React.Component {
   constructor(props) {
@@ -23,6 +22,7 @@ class Home extends React.Component {
           </View>
           <View style={[styles.headBtn]}>
             <Button title="设置" onPress={() => { }} />
+            <Icon name="rocket" size={30} color="#900" />
           </View>
         </View>
         <View style={{ flex: 1, display: "flex", flexDirection: "row" }}>

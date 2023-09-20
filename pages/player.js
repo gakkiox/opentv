@@ -1,8 +1,8 @@
-
 import React from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
-import Video from "react-native-video"
-const step = 5
+import Video from "react-native-video";
+
+const step = 5;
 class Player extends React.Component {
   constructor(props) {
     super(props);
@@ -40,7 +40,7 @@ class Player extends React.Component {
     this.setState({ currentTime: currentTime - 5 });
   }
   render() {
-    let { currentTime, duration, paused, muted } = this.state
+    let { currentTime, duration, paused, muted } = this.state;
     return (
       <View style={[styles.container]}>
         <View style={[styles.fullScreen, { zIndex: 10, backgroundColor: "rgba(0,0,0,0)" }]}>
