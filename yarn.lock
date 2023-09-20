@@ -6001,7 +6001,7 @@ react-native-video@^5.2.1:
 
 react-native@0.72.4:
   version "0.72.4"
-  resolved "https://registry.npmmirror.com/react-native/-/react-native-0.72.4.tgz"
+  resolved "https://registry.npmmirror.com/react-native/-/react-native-0.72.4.tgz#97b57e22e4d7657eaf4d1f62a678511fcf9bdda7"
   integrity sha512-+vrObi0wZR+NeqL09KihAAdVlQ9IdplwznJWtYrjnQ4UbCW6rkzZJebRsugwUneSOKNFaHFEo1uKU89HsgtYBg==
   dependencies:
     "@jest/create-cache-key-function" "^29.2.1"
