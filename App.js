@@ -1,8 +1,6 @@
-
-
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import Navigation from './nav/index'
+import Navigation from './src/nav/index'
 
 function App() {
   return (
