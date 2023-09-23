@@ -1,105 +1,231 @@
 import React from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
+import { Text, View, Button, StyleSheet, TVEventHandler, TouchableOpacity } from "react-native";
 import Video from "react-native-video";
+import Icon from 'react-native-vector-icons/Feather';
 
 const step = 5;
 class Player extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      paused: false,
+      muted: false,
+      duration: 0,
+      currentTime: 0,
+      showControls: true,
+      playEnd: false,
+      uri: "http://192.168.1.10:8445/a05/a05.m3u8",
+      // uri: "http://127.0.0.1:8445/demo.m3u8",
+      // uri: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
+    }
+    this.player = {
+      controlTimeout: null,
+      controlTimeoutDelay: 3000,
+    }
+    this.opts = {
+
+    }
+    this.event = {
+      onLoad: this._onLoad.bind(this),
+      onProgress: this._onProgress.bind(this),
+      onEnd: this._onEnd.bind(this),
+      onError: this._onError.bind(this),
+      
+    }
   }
-  state = {
-    paused: false,
-    muted: true,
-    duration: 0,
-    currentTime: 0
+
+  _onLoad(ev) {
+    let state = this.state;
+    state.duration = ev.duration;
+    state.playEnd = false;
+    state.paused = false;
+    if (state.showControls) {
+      this.setControlTimeout()
+    }
+    this.setState({ state });
   }
-  loadHandle(ev) {
-    this.setState({ duration: ev.duration });
+  _onProgress(ev) {
+    let state = this.state;
+    state.currentTime = ev.currentTime;
+    this.setState({ state });
   }
-  progressHandle(ev) {
-    this.setState({ currentTime: ev.currentTime });
+  _onEnd() {
+    let state = this.state;
+    state.paused = true;
+    state.playEnd = true;
+    state.showControls = true;
+    setTimeout(()=>{
+      this.playNext()
+    }, 3000);
+    this.setState({ state }); 
+  }
+  _onError(e){
+    console.log(e)
+  }
+  playNext(){
+    let state = this.state;
+    state.uri = "http://192.168.1.10:8445/a05.mp4";
+    this.setState({ state }); 
+  }
+  playPrev(){
+    
+  }
+  _hideControls() {
+    let state = this.state;
+    state.showControls = false;
+    this.setState({ state });
+  }
+  setControlTimeout() {
+    this.player.controlTimeout = setTimeout(() => {
+      this._hideControls();
+    },
+      this.player.controlTimeoutDelay
+    )
+  }
+  clearControlTimeout() {
+    clearTimeout(this.player.controlTimeout);
+  }
+  resetControlTimeout() {
+    this.clearControlTimeout();
+    this.setControlTimeout();
+  }
+  _togglePlayPause() {
+    let state = this.state;
+    state.paused = !state.paused;
+    state.showControls = true;
+    if (this.player.controlTimeout) {
+      this.resetControlTimeout();
+    }
+    this.setState({ state });
   }
   advanceHandle() {
-    let { currentTime, duration } = this.state;
-    if (duration - currentTime < 5) {
-      this.video.seek(duration - 1);
-      this.setState({ currentTime: duration - 1 });
+    let state = this.state;
+    if (state.duration - state.currentTime < 5) {
+      this.video.seek(state.duration - 1);
+      this.setState({ currentTime: state.duration - 1 });
       return
     }
-    this.video.seek(currentTime + 5)
-    this.setState({ currentTime: currentTime + 5 });
+    this.video.seek(state.currentTime + 5)
+    state.currentTime += 5;
+    state.showControls = true;
+    if (this.player.controlTimeout) {
+      this.resetControlTimeout();
+    };
+    this.setState({ state });
   }
   recoilHandle() {
-    let { currentTime } = this.state;
-    if (currentTime < 5) {
+    let state = this.state;
+    if (state.currentTime < 5) {
       this.video.seek(0);
       this.setState({ currentTime: 0 });
       return
     }
-    this.video.seek(currentTime - 5);
-    this.setState({ currentTime: currentTime - 5 });
+    this.video.seek(state.currentTime - 5);
+    state.currentTime -= 5;
+    state.showControls = true;
+    if (this.player.controlTimeout) {
+      this.resetControlTimeout();
+    };
+    this.setState({ state });
+  }
+  _enableTVEventHandler() {
+    console.log("enable ")
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function (cmp, evt) {
+      console.log(evt)
+      if (evt && evt.eventType === 'right') {
+        cmp.advanceHandle();
+      } else if (evt && evt.eventType === 'up') {
+
+      } else if (evt && evt.eventType === 'left') {
+        cmp.recoilHandle();
+      } else if (evt && evt.eventType === 'down') {
+      } else if (evt && evt.eventType === 'select') {
+        cmp._togglePlayPause();
+      }
+    });
+  }
+
+  _disableTVEventHandler() {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
+  }
+  componentDidMount() {
+    this.touchView.focus();
+    this._enableTVEventHandler();
+
+  }
+  componentWillUnmount() {
+    this._disableTVEventHandler();
+    this.clearControlTimeout();
   }
   render() {
-    let { currentTime, duration, paused, muted } = this.state;
+    let { currentTime, duration, paused, muted, showControls, playEnd, uri } = this.state;
     return (
-      <View style={[styles.container]}>
-        <View style={[styles.fullScreen, { zIndex: 10, backgroundColor: "rgba(0,0,0,0)" }]}>
-          <View style={{ width: "100%", padding: 10 }}>
-            <Text>海绵宝宝大作战</Text>
-          </View>
-          <View style={{ flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-            <Button title={this.state.paused ? "播放" : "停止"} onPress={() => this.setState({ paused: !this.state.paused })} />
-          </View>
-          <View style={{ width: "100%", padding: 10, flexDirection: "row", alignItems: "center" }}>
-            <View style={{ flexDirection: "row" }}>
-              <View>
-                <Button title="上一集" onPress={() => { }} />
-              </View>
-              <View>
-                <Button title="下一集" onPress={() => { }} />
-              </View>
-              <View>
-                <Button title="后退" onPress={this.recoilHandle.bind(this)} />
-              </View>
-              <View>
-                <Button title="前进" onPress={this.advanceHandle.bind(this)} />
-              </View>
+      <TouchableOpacity
+        ref={e => this.touchView = e}
+        activeOpacity={1}
+        style={[styles.container]}>
+        <View style={[styles.fullScreen, { opacity: showControls ? 1 : 0, zIndex: 10, backgroundColor: "transparent" }]}>
+          <View style={[styles.fullScreen, {zIndex: 1,}]}>
+            <View style={{ width: "100%", padding: 10 }}>
+              <Text style={{ fontSize: 16 }}>海绵宝宝大作战</Text>
             </View>
-            <View style={{ flex: 1, flexDirection: "row", paddingHorizontal: 10 }}>
-              <Text style={{ textAlign: "center" }}>
-                {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60)}
-              </Text>
-              <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 15 }}>
-                <View
-                  style={{ width: "100%", height: 3, backgroundColor: "red", position: "relative" }}>
-                  <View style={[styles.dot, { left: `${(currentTime / duration * 100).toFixed(2)}%` }]}>
-                  </View>
-                </View>
-
+            <View style={{ flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+              <View style={{opacity: playEnd?1:0}}>
+                <Text style={{fontSize: 22}}>稍后将为您播放下一集</Text>
               </View>
-              <Text style={{ textAlign: "center" }}>
-                {Math.floor(duration / 60)}:{Math.floor(duration % 60)}
-              </Text>
+              
+            </View>
+            <View style={{ width: "100%", padding: 10, flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flexDirection: "row" }}>
+                <View>
+                  <Icon name={paused ? 'play' : 'pause'} size={30} color="white" />
+                </View>
+              </View>
+              <View style={{ flex: 1, flexDirection: "row", paddingHorizontal: 10 }}>
+                <Text style={{ textAlign: "center" }}>
+                  {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60)}
+                </Text>
+                <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 15 }}>
+                  <View
+                    style={{ width: "100%", height: 3, backgroundColor: "red", position: "relative" }}>
+                    <View style={[styles.dot, { left: `${(currentTime / duration * 100).toFixed(2)}%` }]}>
+                    </View>
+                  </View>
+
+                </View>
+                <Text style={{ textAlign: "center" }}>
+                  {Math.floor(duration / 60)}:{Math.floor(duration % 60)}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-        <Video
-          ref={e => this.video = e}
-          source={{ uri: 'http://192.168.1.10:8445/b04.mp4' }}
-          paused={paused}
-          muted={muted}
-          style={[styles.fullScreen, { zIndex: 1 }]}
-          onLoad={this.loadHandle.bind(this)}
-          onProgress={this.progressHandle.bind(this)}
-          repeat={false}
-          bufferConfig={{
-            minBufferMs: 15000,
-            maxBufferMs: 50000,
-            bufferForPlaybackMs: 2500,
-            bufferForPlaybackAfterRebufferMs: 5000
-          }}
-        />
-      </View>
+
+        <View style={[styles.fullScreen]}>
+          <Video
+            ref={e => this.video = e}
+            source={{ uri }}
+            paused={paused}
+            muted={muted}
+            style={[styles.fullScreen, { zIndex: 1 }]}
+            onLoad={this.event.onLoad}
+            onEnd={this.event.onEnd}
+            onError={this.event.onError}
+            onProgress={this.event.onProgress}
+            repeat={false}
+            bufferConfig={{
+              minBufferMs: 15000,
+              maxBufferMs: 50000,
+              bufferForPlaybackMs: 2500,
+              bufferForPlaybackAfterRebufferMs: 5000
+            }}
+          />
+        </View>
+      </TouchableOpacity>
     )
   }
 }
@@ -125,7 +251,7 @@ const styles = StyleSheet.create({
     top: -3,
     width: 8,
     height: 8,
-    backgroundColor: "black",
+    backgroundColor: "white",
     borderRadius: 4
   }
 });
