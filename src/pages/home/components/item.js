@@ -34,7 +34,7 @@ class ItemComponent extends React.Component {
               <Image style={{ width: 140, height: 200, borderRadius: 4 }} source={this.props.source} />
             </View>
             <View style={{ paddingHorizontal: 6, }}>
-              <Text style={{ color: is_focus ? theme : "white", fontSize: 16 }}>{this.props.title}</Text>
+              <Text style={{ color: is_focus ? theme : "white", fontSize: 16, width: 140 }}>{this.props.title}</Text>
             </View>
           </View>
 

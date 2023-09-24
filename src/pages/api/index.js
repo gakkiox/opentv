@@ -35,8 +35,15 @@ export function getMovieClassify(data) {
   return post("/tv/get_movie_class", data)
 }
 export function getTeleplayList(data) {
+  console.log(data)
   return post("/tv/get_teleplay_list", data)
 }
 export function getMovieList(data) {
   return post("/tv/get_movie_list", data)
+}
+export function getMovieDetail(data) {
+  return post("/tv/get_movie_detail", data)
+}
+export function getTeleplayDetail(data) {
+  return post("/tv/get_teleplay_detail", data)
 }

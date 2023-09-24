@@ -11,16 +11,15 @@ class Setting extends React.Component {
     };
   }
   changeHandle(text) {
-
     this.setState({
-      ip: text
+      ip: text,
     })
   }
   focusHandle() {
     this.ipinput.focus();
   }
   pressHandle(){
-    global.ip = this.state.ip
+    global.ip = this.state.ip;
   }
   componentDidMount(){
     this.setState({
@@ -59,7 +58,7 @@ class Setting extends React.Component {
           </View>
         </View>
         <View style={[styles.fullScreen, { zIndex: 1, }]}>
-          <Image style={{ width: "100%", height: "100%", opacity: 0.4 }} source={require("../../assets/home.jpg")} />
+          <Image style={{ width: "100%", height: "100%", opacity: 0.4 }} source={require("../../assets/setting.jpg")} />
         </View>
       </View>
     )

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, ScrollView, Image, FlatList, Dimensions, Text } from "react-native";
+import { View, StyleSheet, ScrollView, Image, FlatList, Text } from "react-native";
 import Btn from "./components/btn";
 import HeadBtn from "./components/headBtn";
 import Item from "./components/item";
@@ -13,39 +13,75 @@ class Home extends React.Component {
       classify_list: [],
       tv_class: [],
       movie_class: [],
-      current_show: "tv",
+      current_show: "teleplay",
       list: [],
       data_total: 0,
-      numColumns: (Dimensions.get("window").width - 100) / 140
+      offset: 1
     };
+    this.numColumns = Math.floor((global.windowWidth - 100) / 140);
+    this.limit = 20;
+    this.baseurl = global.baseurl;
   }
 
-  toggleMovie() {
+  async toggleMovie() {
     let state = this;
     if (state.current_show == "movie") {
       return;
     }
-    state.current_show = "movie";
-    this.setState(state);
+    try {
+      let ret = await getMovieList({ limit: this.limit, offset: 1 });
+      state.list = ret.data.rows;
+      state.data_total = ret.data.total;
+      state.current_show = "movie";
+      this.setState(state);
+    } catch (e) {
+      let msg = `获取电影列表失败`;
+      console.log(e, msg);
+    }
+
   }
-  toggleTv() {
+  async toggleTv() {
     let state = this;
-    if (state.current_show == "tv") {
+    if (state.current_show == "teleplay") {
       return;
     }
-    state.current_show = "tv";
-    this.setState(state);
-  }
+    try {
+      let ret = await getTeleplayList({ limit: this.limit, offset: 1 });
+      state.list = ret.data.rows;
+      state.data_total = ret.data.total;
+      state.current_show = "teleplay";
+      this.setState(state);
+    } catch (e) {
+      let msg = `获取电视剧列表失败`;
+      console.log(e, msg);
+    }
 
+  }
+  async endReached() {
+    let state = this.state;
+    try {
+      ++state.offset;
+      if (state.current_show == "teleplay") {
+        let ret = await getTeleplayList({ limit: this.limit, offset: state.offset });
+        state.list = state.list.concat(ret.data.rows);
+      }else{
+        let ret = await getMovieList({ limit: this.limit, offset: state.offset });
+        state.list = state.list.concat(ret.data.rows);
+      }
+      this.setState(state);
+    } catch (e) {
+      let msg = `获取影视列表失败`;
+      console.log(e, msg);
+    }
+
+  }
   async componentDidMount() {
     let state = this;
-    console.log(state.numColumns)
-    this.baseurl = global.baseurl
     console.log("componentDidMounts")
     try {
       let ret1 = await getTeleplayClassify();
       let ret2 = await getMovieClassify();
-      let ret3 = await getTeleplayList({ limit: 20, offset: 1 });
+      let ret3 = await getTeleplayList({ limit: this.limit, offset: 1 });
       state.list = ret3.data.rows;
       state.data_total = ret3.data.total;
       state.tv_class = ret1.data;
@@ -60,7 +96,7 @@ class Home extends React.Component {
 
   renderHeader() {
     let { classify_list } = this.state
-    if (this.state.current_show == "tv") {
+    if (this.state.current_show == "teleplay") {
       return <View></View>
     }
     return (
@@ -77,8 +113,18 @@ class Home extends React.Component {
       </View>
     )
   }
+  renderItem(item) {
+    return (
+      <View style={{ marginBottom: 10 }}>
+        <Item
+          source={{ uri: `${this.baseurl}/public/` + item.pic }}
+          onPress={() => this.props.navigation.navigate("Detail", { id: item.id, type: this.state.current_show })}
+          title={item.name} />
+      </View>
+    )
+  }
   render() {
-    let { list, numColumns } = this.state
+    let { list } = this.state
     return (
       <View style={{ height: "100%", width: "100%", position: "relative", backgroundColor: "black" }}>
         <View style={[styles.container]}>
@@ -100,43 +146,13 @@ class Home extends React.Component {
           {this.renderHeader()}
           <View style={{ flex: 1, display: "flex", flexDirection: "row" }}>
             <FlatList
+              onEndReachedThreshold={1}
               showsVerticalScrollIndicator={false}
-              numColumns={numColumns}
+              numColumns={this.numColumns}
               data={list}
-              renderItem={({ item, index, separators }) => (
-                <View>
-                  <Text>{item}</Text>
-                </View>
-                // <View key={index} style={{ marginBottom: 10 }}>
-                //   <Item
-                //     source={{ uri: `${this.baseurl}/public/` + item.pic }}
-                //     onPress={() => this.props.navigation.navigate("Detail")}
-                //     title={item.name} />
-                // </View>
-              )}
+              onEndReached={this.endReached.bind(this)}
+              renderItem={({ item }) => this.renderItem(item)}
             />
-            {/* <View style={{ flex: 1, display: "flex", flexDirection: "row", paddingHorizontal: 10 }}>
-              <ScrollView style={{ height: "100%", width: "100%", }} showsVerticalScrollIndicator={false}>
-                <View style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
-                  {list.map((item, index) => {
-                    return (
-                      <View key={index} style={{ marginBottom: 10 }}>
-                        <Item
-                          source={{ uri: `${baseurl}/public/` + item.pic }}
-                          onPress={() => this.props.navigation.navigate("Detail")}
-                          title={item.name} />
-                      </View>
-                    )
-                  })}
-                  <View style={{ width: 140, height: 1 }}></View>
-                  <View style={{ width: 140, height: 1 }}></View>
-                  <View style={{ width: 140, height: 1 }}></View>
-                  <View style={{ width: 140, height: 1 }}></View>
-                  <View style={{ width: 140, height: 1 }}></View>
-                  <View style={{ width: 140, height: 1 }}></View>
-                </View>
-              </ScrollView>
-            </View> */}
           </View>
         </View>
         <View style={[styles.fullScreen, { zIndex: 1, }]}>
@@ -148,8 +164,12 @@ class Home extends React.Component {
 }
 var styles = StyleSheet.create({
   container: {
-    height: "100%", width: "100%", display: "flex", flexDirection: "column",
-    position: "relative", zIndex: 10
+    height: "100%", 
+    width: "100%", 
+    display: "flex", 
+    flexDirection: "column",
+    position: "relative", 
+    zIndex: 10
   },
   fullScreen: {
     position: 'absolute',
@@ -159,7 +179,10 @@ var styles = StyleSheet.create({
     right: 0,
   },
   head: {
-    width: "100%", paddingVertical: 6, display: "flex", flexDirection: "row"
+    width: "100%", 
+    paddingVertical: 6, 
+    display: "flex", 
+    flexDirection: "row"
   }
 })
 export default Home
