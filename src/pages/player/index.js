@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Button, StyleSheet, TVEventHandler, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TVEventHandler, TouchableOpacity } from "react-native";
 import Video from "react-native-video";
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -14,8 +14,8 @@ class Player extends React.Component {
       currentTime: 0,
       showControls: true,
       playEnd: false,
-      uri: "http://192.168.1.10:8445/a05/a05.m3u8",
-      // uri: "http://127.0.0.1:8445/demo.m3u8",
+      // uri: "http://192.168.1.10:8445/a05/a05.m3u8",
+      uri: "http://192.168.1.102:8445/a05.mp4",
       // uri: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
     }
     this.player = {
@@ -30,7 +30,7 @@ class Player extends React.Component {
       onProgress: this._onProgress.bind(this),
       onEnd: this._onEnd.bind(this),
       onError: this._onError.bind(this),
-      
+
     }
   }
 
@@ -54,21 +54,21 @@ class Player extends React.Component {
     state.paused = true;
     state.playEnd = true;
     state.showControls = true;
-    setTimeout(()=>{
+    setTimeout(() => {
       this.playNext()
     }, 3000);
-    this.setState({ state }); 
+    this.setState({ state });
   }
-  _onError(e){
+  _onError(e) {
     console.log(e)
   }
-  playNext(){
+  playNext() {
     let state = this.state;
-    state.uri = "http://192.168.1.10:8445/a05.mp4";
-    this.setState({ state }); 
+    state.uri = "http://192.168.1.102:8445/b04.mp4";
+    this.setState({ state });
   }
-  playPrev(){
-    
+  playPrev() {
+
   }
   _hideControls() {
     let state = this.state;
@@ -161,6 +161,18 @@ class Player extends React.Component {
     this._disableTVEventHandler();
     this.clearControlTimeout();
   }
+  renderMinutes(num) {
+    let time = Math.floor(num / 60);
+    return (
+      <Text>{time < 10 ? "0" + time : time}</Text>
+    )
+  }
+  renderSecond(num) {
+    let time = Math.floor(num % 60);
+    return (
+      <Text>{time < 10 ? "0" + time : time}</Text>
+    )
+  }
   render() {
     let { currentTime, duration, paused, muted, showControls, playEnd, uri } = this.state;
     return (
@@ -169,15 +181,15 @@ class Player extends React.Component {
         activeOpacity={1}
         style={[styles.container]}>
         <View style={[styles.fullScreen, { opacity: showControls ? 1 : 0, zIndex: 10, backgroundColor: "transparent" }]}>
-          <View style={[styles.fullScreen, {zIndex: 1,}]}>
+          <View style={[styles.fullScreen, { zIndex: 1, }]}>
             <View style={{ width: "100%", padding: 10 }}>
               <Text style={{ fontSize: 16 }}>海绵宝宝大作战</Text>
             </View>
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-              <View style={{opacity: playEnd?1:0}}>
-                <Text style={{fontSize: 22}}>稍后将为您播放下一集</Text>
+              <View style={{ opacity: playEnd ? 1 : 0 }}>
+                <Text style={{ fontSize: 22 }}>稍后将为您播放下一集</Text>
               </View>
-              
+
             </View>
             <View style={{ width: "100%", padding: 10, flexDirection: "row", alignItems: "center" }}>
               <View style={{ flexDirection: "row" }}>
@@ -187,7 +199,7 @@ class Player extends React.Component {
               </View>
               <View style={{ flex: 1, flexDirection: "row", paddingHorizontal: 10 }}>
                 <Text style={{ textAlign: "center" }}>
-                  {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60)}
+                  {this.renderMinutes(currentTime)}:{this.renderSecond(currentTime)}
                 </Text>
                 <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 15 }}>
                   <View
@@ -198,7 +210,7 @@ class Player extends React.Component {
 
                 </View>
                 <Text style={{ textAlign: "center" }}>
-                  {Math.floor(duration / 60)}:{Math.floor(duration % 60)}
+                  {this.renderMinutes(duration)}:{this.renderSecond(duration)}
                 </Text>
               </View>
             </View>
