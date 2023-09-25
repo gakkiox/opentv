@@ -47,3 +47,6 @@ export function getMovieDetail(data) {
 export function getTeleplayDetail(data) {
   return post("/tv/get_teleplay_detail", data)
 }
+export function getTeleplayPlay(data) {
+  return post("/tv/get_teleplay_play", data)
+}

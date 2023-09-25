@@ -1,10 +1,10 @@
 import React from "react";
 import { View, StyleSheet, ScrollView, Image, FlatList, Text } from "react-native";
-import Btn from "./components/btn";
+import Btn from "../components/btn";
 import HeadBtn from "./components/headBtn";
 import Item from "./components/item";
 import Hint from "../components/hint";
-import { getTeleplayClassify, getMovieClassify, getTeleplayList, getMovieList } from "../api/index"
+import { getTeleplayClassify, getMovieClassify, getTeleplayList, getMovieList } from "../api/index";
 
 class Home extends React.Component {
   constructor(props) {
@@ -16,7 +16,7 @@ class Home extends React.Component {
       current_show: "teleplay",
       list: [],
       data_total: 0,
-      offset: 1
+      offset: 1,
     };
     this.numColumns = Math.floor((global.windowWidth - 100) / 140);
     this.limit = 20;
@@ -33,6 +33,7 @@ class Home extends React.Component {
       state.list = ret.data.rows;
       state.data_total = ret.data.total;
       state.current_show = "movie";
+      state.classify_list = state.movie_class;
       this.setState(state);
     } catch (e) {
       let msg = `获取电影列表失败`;
@@ -49,6 +50,7 @@ class Home extends React.Component {
       let ret = await getTeleplayList({ limit: this.limit, offset: 1 });
       state.list = ret.data.rows;
       state.data_total = ret.data.total;
+      state.classify_list = state.tv_class;
       state.current_show = "teleplay";
       this.setState(state);
     } catch (e) {
@@ -87,6 +89,7 @@ class Home extends React.Component {
       state.tv_class = ret1.data;
       state.movie_class = ret2.data;
       state.classify_list = ret2.data;
+      console.log(ret2.data)
       this.setState(state);
     } catch (e) {
       let msg = `获取数据失败`;
@@ -118,7 +121,7 @@ class Home extends React.Component {
       <View style={{ marginBottom: 10 }}>
         <Item
           source={{ uri: `${this.baseurl}/public/` + item.pic }}
-          onPress={() => this.props.navigation.navigate("Detail", { id: item.id, type: this.state.current_show })}
+          onPress={() => this.props.navigation.navigate("Detail", { id: item.id, current_show: this.state.current_show })}
           title={item.name} />
       </View>
     )

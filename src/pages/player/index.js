@@ -2,8 +2,8 @@ import React from "react";
 import { Text, View, StyleSheet, TVEventHandler, TouchableOpacity } from "react-native";
 import Video from "react-native-video";
 import Icon from 'react-native-vector-icons/Feather';
+import { getTeleplayPlay } from "../api/index";
 
-const step = 5;
 class Player extends React.Component {
   constructor(props) {
     super(props);
@@ -14,6 +14,10 @@ class Player extends React.Component {
       currentTime: 0,
       showControls: true,
       playEnd: false,
+      playDetail:{},
+      playList:[],
+      nextPlay: {},
+      prevPlay: null,
       // uri: "http://192.168.1.10:8445/a05/a05.m3u8",
       uri: "http://192.168.1.102:8445/a05.mp4",
       // uri: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
@@ -21,6 +25,7 @@ class Player extends React.Component {
     this.player = {
       controlTimeout: null,
       controlTimeoutDelay: 3000,
+      step: 5,
     }
     this.opts = {
 
@@ -100,13 +105,13 @@ class Player extends React.Component {
   }
   advanceHandle() {
     let state = this.state;
-    if (state.duration - state.currentTime < 5) {
+    if (state.duration - state.currentTime < this.player.step) {
       this.video.seek(state.duration - 1);
       this.setState({ currentTime: state.duration - 1 });
       return
     }
-    this.video.seek(state.currentTime + 5)
-    state.currentTime += 5;
+    this.video.seek(state.currentTime + this.player.step)
+    state.currentTime += this.player.step;
     state.showControls = true;
     if (this.player.controlTimeout) {
       this.resetControlTimeout();
@@ -115,13 +120,13 @@ class Player extends React.Component {
   }
   recoilHandle() {
     let state = this.state;
-    if (state.currentTime < 5) {
+    if (state.currentTime < this.player.step) {
       this.video.seek(0);
       this.setState({ currentTime: 0 });
       return
     }
-    this.video.seek(state.currentTime - 5);
-    state.currentTime -= 5;
+    this.video.seek(state.currentTime - this.player.step);
+    state.currentTime -= this.player.step;
     state.showControls = true;
     if (this.player.controlTimeout) {
       this.resetControlTimeout();
@@ -152,10 +157,19 @@ class Player extends React.Component {
       delete this._tvEventHandler;
     }
   }
-  componentDidMount() {
+  async componentDidMount() {
+    let { tv_id, id } = this.props.route.params;
+    let state = this.state;
     this.touchView.focus();
     this._enableTVEventHandler();
+    try {
+      let ret = await getTeleplayPlay({ tv_id, id });
 
+      console.log(ret.data)
+    } catch (e) {
+      let msg = `获取资源详情失败`;
+      console.log(msg, e);
+    }
   }
   componentWillUnmount() {
     this._disableTVEventHandler();
@@ -187,7 +201,9 @@ class Player extends React.Component {
             </View>
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
               <View style={{ opacity: playEnd ? 1 : 0 }}>
-                <Text style={{ fontSize: 22 }}>稍后将为您播放下一集</Text>
+                <Text style={{ fontSize: 22 }}>
+                  {this.props.route.params.current_show == 'teleplay' ? '稍后将为您播放下一集': "播放结束"}
+                </Text>
               </View>
 
             </View>

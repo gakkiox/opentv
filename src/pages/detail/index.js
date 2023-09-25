@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, Image, StyleSheet, ScrollView } from "react-native";
 import { getTeleplayDetail, getMovieDetail } from "../api/index"
-import Btn from "../home/components/btn"
+import Btn from "../components/btn"
 
 class Detail extends React.Component {
   constructor(props) {
@@ -14,8 +14,8 @@ class Detail extends React.Component {
   async componentDidMount() {
     try {
       let state = this.state;
-      let { type, id } = this.props.route.params;
-      if (type == "teleplay") {
+      let { current_show, id } = this.props.route.params;
+      if (current_show == "teleplay") {
         let ret = await getTeleplayDetail({ id });
         state.film_data = ret.data;
       } else {
@@ -30,9 +30,9 @@ class Detail extends React.Component {
 
   }
   renderPlaylist() {
-    let { type } = this.props.route.params;
+    let { current_show } = this.props.route.params;
     let { film_data } = this.state;
-    if (type == "teleplay") {
+    if (current_show == "teleplay") {
       return (
         <View>
           <Text style={{ marginBottom: 10, fontSize: 18 }}>剧集</Text>
@@ -41,7 +41,11 @@ class Detail extends React.Component {
               {film_data.teleplay_list.map((item, index) => {
                 return (
                   <View style={{ marginRight: 4 }} key={index}>
-                    <Btn title={`${index + 1}`} onPress={() => this.props.navigation.navigate("Player")} />
+                    <Btn title={`${index + 1}`} onPress={() => this.props.navigation.navigate("Player", {
+                      tv_id: film_data.id,
+                      id: item.id,
+                      current_show
+                    })} />
                   </View>
                 )
               })}
@@ -51,7 +55,9 @@ class Detail extends React.Component {
       )
     }
     return (
-      <View></View>
+      <View style={{ width: "100%", alignItems: "flex-start" }}>
+        <Btn title="立即播放" />
+      </View>
     )
   }
   render() {
@@ -68,7 +74,7 @@ class Detail extends React.Component {
             </View>
             <View style={{ flex: 1, backgroundColor: "rgba(255, 255,255, 0.8)", padding: 10, borderRadius: 5 }}>
               <Text style={{ color: "black", fontSize: 22 }}>{film_data.name}</Text>
-              <Text style={{ color: "black", fontSize: 14 }}>{this.props.route.params.type == "teleplay" ? "电视剧" : "电影"}</Text>
+              <Text style={{ color: "black", fontSize: 14 }}>{this.props.route.params.current_show == "teleplay" ? "电视剧" : "电影"}</Text>
               <Text style={{ color: "black", fontSize: 14 }}>{film_data.actor}</Text>
               <Text style={{ color: "black", fontSize: 14 }}>{film_data.director}</Text>
               <Text style={{ fontSize: 12, color: "black" }}>
