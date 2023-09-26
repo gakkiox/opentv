@@ -1,7 +1,8 @@
 import React from "react";
 import { Text, View, Image, StyleSheet, ScrollView } from "react-native";
-import { getTeleplayDetail, getMovieDetail } from "../api/index"
-import Btn from "../components/btn"
+import { getTeleplayDetail, getMovieDetail } from "../api/index";
+import Hint from "../components/hint.js";
+import Btn from "../components/btn";
 
 class Detail extends React.Component {
   constructor(props) {
@@ -22,9 +23,11 @@ class Detail extends React.Component {
         let ret2 = await getMovieDetail({ id });
         state.film_data = ret2.data;
       }
+      this.hint.show("获取数据成功");
       this.setState(state);
     } catch (e) {
       let msg = `获取影视详细信息失败`;
+      this.hint.show(msg, "red");
       console.log(e, msg);
     }
 
@@ -64,6 +67,7 @@ class Detail extends React.Component {
     let { film_data } = this.state
     return (
       <View style={{ height: "100%", width: "100%", position: "relative", backgroundColor: "black" }}>
+        <Hint ref={e => this.hint = e} />
         <View style={[styles.container]}>
           <View style={{ display: "flex", flexDirection: "row", width: "100%", paddingHorizontal: 20, marginVertical: 10 }}>
             <Btn title="返回" onPress={() => this.props.navigation.goBack()} />

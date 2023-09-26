@@ -2,6 +2,7 @@ import React from "react";
 import { Text, View, StyleSheet, TVEventHandler, TouchableOpacity } from "react-native";
 import Video from "react-native-video";
 import Icon from 'react-native-vector-icons/Feather';
+import Hint from "../components/hint.js";
 import { getTeleplayPlay } from "../api/index";
 
 class Player extends React.Component {
@@ -17,6 +18,8 @@ class Player extends React.Component {
       playDetail: {},
       playList: [],
       listEnd: false,
+      hintText: "",
+      isUpDown: false,
       // uri: "http://192.168.1.10:8445/a05/a05.m3u8",
       uri: "http://192.168.1.10:8445/a05.mp4",
       // uri: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
@@ -27,22 +30,19 @@ class Player extends React.Component {
       step: 5,
     }
     this.opts = {
-
     }
     this.event = {
       onLoad: this._onLoad.bind(this),
       onProgress: this._onProgress.bind(this),
       onEnd: this._onEnd.bind(this),
       onError: this._onError.bind(this),
-
     }
   }
 
   _onLoad(ev) {
     let state = this.state;
     state.duration = ev.duration;
-    state.playEnd = false;
-    state.paused = false;
+    state.paused = true;
     if (state.showControls) {
       this.setControlTimeout()
     }
@@ -54,26 +54,12 @@ class Player extends React.Component {
     this.setState({ state });
   }
   _onEnd() {
-    let state = this.state;
-    state.paused = true;
-    state.playEnd = true;
-    state.showControls = true;
-    setTimeout(() => {
-      this.playNext()
-    }, 3000);
-    this.setState({ state });
+    this.playNextPrev("next");
   }
   _onError(e) {
     console.log(e)
   }
-  playNext() {
-    let state = this.state;
-    state.uri = "http://192.168.1.102:8445/b04.mp4";
-    this.setState({ state });
-  }
-  playPrev() {
 
-  }
   _hideControls() {
     let state = this.state;
     state.showControls = false;
@@ -132,32 +118,52 @@ class Player extends React.Component {
     };
     this.setState({ state });
   }
-  playPrev() {
+  playNextPrev(type) {
     let state = this.state;
-    if (state.playDetail.idx == 1) {
-      let msg = `已经是第一集了哟~`;
-      console.log(msg);
-      return;
+    let params = {
+      tv_id: state.playDetail.tv_id
+    };
+    state.isUpDown = true;
+    if (type == "next") {
+      if (state.playDetail.idx == state.playList.length) {
+        let msg = `抱歉电视剧没有下一集了哟~`;
+        this.hint.show(msg);
+        return;
+      }
+      params.idx = state.playDetail.idx + 1;
+      this.showMsg("正在为您加载下一集");
     }
-    this.getTvDetail({ idx: state.playDetail.idx - 1, tv_id: state.playDetail.tv_id });
-  }
-  playNext() {
-    let state = this.state;
-    if (state.playDetail.idx == state.playList.length) {
-      let msg = `抱歉电视剧没有下一集了哟~`;
-      console.log(msg);
-      return;
+    if (type == "prev") {
+      if (state.playDetail.idx == 1) {
+        let msg = `已经是第一集了哟~`;
+        this.hint.show(msg);
+        return;
+      }
+      params.idx = state.playDetail.idx - 1;
+      this.showMsg("正在为您加载上一集");
     }
-    this.getTvDetail({ idx: state.playDetail.idx + 1, tv_id: state.playDetail.tv_id });
+    this.setState(state);
+    this.getTvDetail(params);
   }
   async getTvDetail(params) {
-    console.log(params)
     let state = this.state;
-    let ret = await getTeleplayPlay(params);
-    state.playDetail = ret.data.play_detail;
-    console.log(ret.data.play_detail)
-    state.playList = ret.data.play_list;
-    state.uri = ret.data.play_detail.link;
+    console.log("getTvDetail");
+    try {
+      let ret = await getTeleplayPlay(params);
+      state.playDetail = ret.data.play_detail;
+      state.playList = ret.data.play_list;
+      state.uri = ret.data.play_detail.link;
+      setTimeout(() => {
+        this.setState({
+          playEnd: false,
+          paused: false,
+          isUpDown: false,
+        })
+      }, this.player.controlTimeoutDelay);
+    } catch (e) {
+      let msg = `获取资源失败`;
+      console.log(msg, e);
+    }
     this.setState({ state });
   }
   _enableTVEventHandler() {
@@ -168,17 +174,27 @@ class Player extends React.Component {
       if (evt && evt.eventType === 'right') {
         cmp.advanceHandle();
       } else if (evt && evt.eventType === 'up') {
-        cmp.playPrev();
+        if (!cmp.state.isUpDown) {
+          cmp.playNextPrev("prev");
+        }
       } else if (evt && evt.eventType === 'left') {
         cmp.recoilHandle();
       } else if (evt && evt.eventType === 'down') {
-        cmp.playNext();
+        if (!cmp.state.isUpDown) {
+          cmp.playNextPrev("next");
+        }
       } else if (evt && evt.eventType === 'select') {
         cmp._togglePlayPause();
       }
     });
   }
-
+  showMsg(msg) {
+    let state = this.state;
+    state.showControls = true;
+    state.paused = true;
+    state.hintText = msg;
+    this.setState(state);
+  }
   _disableTVEventHandler() {
     if (this._tvEventHandler) {
       this._tvEventHandler.disable();
@@ -217,24 +233,24 @@ class Player extends React.Component {
     )
   }
   render() {
-    let { currentTime, duration, paused, muted, showControls, playEnd, uri, playDetail } = this.state;
+    let { currentTime, duration, paused, muted, showControls, uri, playDetail, hintText } = this.state;
     return (
       <TouchableOpacity
         ref={e => this.touchView = e}
         activeOpacity={1}
         style={[styles.container]}>
+        <Hint ref={e => this.hint = e} />
         <View style={[styles.fullScreen, { opacity: showControls ? 1 : 0, zIndex: 10, backgroundColor: "transparent" }]}>
           <View style={[styles.fullScreen, { zIndex: 1, }]}>
             <View style={{ width: "100%", padding: 10 }}>
-              <Text style={{ fontSize: 16 }}>海绵宝宝大作战</Text>
+              <Text style={{ fontSize: 16 }}>{playDetail.play_name}</Text>
             </View>
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-              <View style={{ opacity: playEnd ? 1 : 0 }}>
+              <View >
                 <Text style={{ fontSize: 22 }}>
-                  {this.props.route.params.current_show == 'teleplay' ? '稍后将为您播放下一集' : "播放结束"}
+                  {hintText}
                 </Text>
               </View>
-
             </View>
             <View style={{ width: "100%", padding: 10, flexDirection: "row", alignItems: "center" }}>
               <View style={{ flexDirection: "row" }}>
@@ -274,6 +290,7 @@ class Player extends React.Component {
             onError={this.event.onError}
             onProgress={this.event.onProgress}
             repeat={false}
+            resizeMode="contain"
             bufferConfig={{
               minBufferMs: 15000,
               maxBufferMs: 50000,

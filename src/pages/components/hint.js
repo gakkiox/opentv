@@ -6,21 +6,43 @@ class HintComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      active: false,
+      title: "",
+      color: "#52c41a"
     }
   }
+  show(title="", color="#52c41a") {
+    this.setState({
+      active: true,
+      color, title
+    })
+    setTimeout(() => {
+      this.setState({
+        active: false
+      })
+    }, 4000);
+  }
   render() {
-    (
+    return (
       <View style={{
         position: "absolute",
-        top: 0, left: 0,
+        top: 0, right: 0,
         flexDirection: "row",
         justifyContent: "flex-end",
+        alignItems: "center",
         zIndex: 100,
-        width: "100%",
-        height: 40
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        opacity: this.state.active ? 1 : 0
       }}>
-        <Icon name="alert-circle" />
-        <Text style={{ color: "red" }}>{this.props.msg}</Text>
+        <Icon name="alert-circle" size={22} color={this.state.color} />
+        <Text style={{
+          color: this.state.color,
+          fontSize: 18,
+          marginLeft: 10
+        }}>
+          {this.state.title}
+        </Text>
       </View>
     )
   }

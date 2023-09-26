@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Image, FlatList, Text } from "react-nativ
 import Btn from "../components/btn";
 import HeadBtn from "./components/headBtn";
 import Item from "./components/item";
-import Hint from "../components/hint";
+import Hint from "../components/hint.js";
 import { getTeleplayClassify, getMovieClassify, getTeleplayList, getMovieList } from "../api/index";
 
 class Home extends React.Component {
@@ -37,6 +37,7 @@ class Home extends React.Component {
       this.setState(state);
     } catch (e) {
       let msg = `获取电影列表失败`;
+      this.hint.show(msg, "red");
       console.log(e, msg);
     }
 
@@ -52,9 +53,10 @@ class Home extends React.Component {
       state.data_total = ret.data.total;
       state.classify_list = state.tv_class;
       state.current_show = "teleplay";
-      this.setState(state);
+      this.setState(state);;
     } catch (e) {
       let msg = `获取电视剧列表失败`;
+      this.hint.show(msg, "red");
       console.log(e, msg);
     }
 
@@ -73,6 +75,7 @@ class Home extends React.Component {
       this.setState(state);
     } catch (e) {
       let msg = `获取影视列表失败`;
+      this.hint.show(msg, "red");
       console.log(e, msg);
     }
 
@@ -89,11 +92,12 @@ class Home extends React.Component {
       state.tv_class = ret1.data;
       state.movie_class = ret2.data;
       state.classify_list = ret2.data;
-      console.log(ret2.data)
+      this.hint.show("获取数据成功");
       this.setState(state);
     } catch (e) {
       let msg = `获取数据失败`;
-      console.log(msg);
+      this.hint.show(msg, "red");
+      console.log(msg, e);
     }
   }
 
@@ -127,9 +131,10 @@ class Home extends React.Component {
     )
   }
   render() {
-    let { list } = this.state
+    let { list } = this.state;
     return (
       <View style={{ height: "100%", width: "100%", position: "relative", backgroundColor: "black" }}>
+        <Hint  ref={e => this.hint = e} />
         <View style={[styles.container]}>
           <View style={[styles.head]}>
             <View>
