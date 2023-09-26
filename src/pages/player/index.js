@@ -14,12 +14,11 @@ class Player extends React.Component {
       currentTime: 0,
       showControls: true,
       playEnd: false,
-      playDetail:{},
-      playList:[],
-      nextPlay: {},
-      prevPlay: null,
+      playDetail: {},
+      playList: [],
+      listEnd: false,
       // uri: "http://192.168.1.10:8445/a05/a05.m3u8",
-      uri: "http://192.168.1.102:8445/a05.mp4",
+      uri: "http://192.168.1.10:8445/a05.mp4",
       // uri: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
     }
     this.player = {
@@ -133,6 +132,34 @@ class Player extends React.Component {
     };
     this.setState({ state });
   }
+  playPrev() {
+    let state = this.state;
+    if (state.playDetail.idx == 1) {
+      let msg = `已经是第一集了哟~`;
+      console.log(msg);
+      return;
+    }
+    this.getTvDetail({ idx: state.playDetail.idx - 1, tv_id: state.playDetail.tv_id });
+  }
+  playNext() {
+    let state = this.state;
+    if (state.playDetail.idx == state.playList.length) {
+      let msg = `抱歉电视剧没有下一集了哟~`;
+      console.log(msg);
+      return;
+    }
+    this.getTvDetail({ idx: state.playDetail.idx + 1, tv_id: state.playDetail.tv_id });
+  }
+  async getTvDetail(params) {
+    console.log(params)
+    let state = this.state;
+    let ret = await getTeleplayPlay(params);
+    state.playDetail = ret.data.play_detail;
+    console.log(ret.data.play_detail)
+    state.playList = ret.data.play_list;
+    state.uri = ret.data.play_detail.link;
+    this.setState({ state });
+  }
   _enableTVEventHandler() {
     console.log("enable ")
     this._tvEventHandler = new TVEventHandler();
@@ -141,10 +168,11 @@ class Player extends React.Component {
       if (evt && evt.eventType === 'right') {
         cmp.advanceHandle();
       } else if (evt && evt.eventType === 'up') {
-
+        cmp.playPrev();
       } else if (evt && evt.eventType === 'left') {
         cmp.recoilHandle();
       } else if (evt && evt.eventType === 'down') {
+        cmp.playNext();
       } else if (evt && evt.eventType === 'select') {
         cmp._togglePlayPause();
       }
@@ -158,18 +186,19 @@ class Player extends React.Component {
     }
   }
   async componentDidMount() {
-    let { tv_id, id } = this.props.route.params;
+    let { current_show, tv_id, idx } = this.props.route.params;
     let state = this.state;
     this.touchView.focus();
     this._enableTVEventHandler();
     try {
-      let ret = await getTeleplayPlay({ tv_id, id });
-
-      console.log(ret.data)
+      if (current_show == "teleplay") {
+        await this.getTvDetail({ tv_id, idx });
+      }
     } catch (e) {
       let msg = `获取资源详情失败`;
       console.log(msg, e);
     }
+    this.setState(state);
   }
   componentWillUnmount() {
     this._disableTVEventHandler();
@@ -188,7 +217,7 @@ class Player extends React.Component {
     )
   }
   render() {
-    let { currentTime, duration, paused, muted, showControls, playEnd, uri } = this.state;
+    let { currentTime, duration, paused, muted, showControls, playEnd, uri, playDetail } = this.state;
     return (
       <TouchableOpacity
         ref={e => this.touchView = e}
@@ -202,7 +231,7 @@ class Player extends React.Component {
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
               <View style={{ opacity: playEnd ? 1 : 0 }}>
                 <Text style={{ fontSize: 22 }}>
-                  {this.props.route.params.current_show == 'teleplay' ? '稍后将为您播放下一集': "播放结束"}
+                  {this.props.route.params.current_show == 'teleplay' ? '稍后将为您播放下一集' : "播放结束"}
                 </Text>
               </View>
 
@@ -236,7 +265,7 @@ class Player extends React.Component {
         <View style={[styles.fullScreen]}>
           <Video
             ref={e => this.video = e}
-            source={{ uri }}
+            source={{ uri: uri }}
             paused={paused}
             muted={muted}
             style={[styles.fullScreen, { zIndex: 1 }]}

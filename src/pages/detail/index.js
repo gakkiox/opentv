@@ -43,7 +43,7 @@ class Detail extends React.Component {
                   <View style={{ marginRight: 4 }} key={index}>
                     <Btn title={`${index + 1}`} onPress={() => this.props.navigation.navigate("Player", {
                       tv_id: film_data.id,
-                      id: item.id,
+                      idx: item.idx,
                       current_show
                     })} />
                   </View>
