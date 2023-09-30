@@ -24,6 +24,7 @@ class Player extends React.Component {
       uri: "http://192.168.1.10:8445/a05.mp4",
       // uri: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
     }
+    this.baseurl = global.baseurl;
     this.player = {
       controlTimeout: null,
       controlTimeoutDelay: 3000,
@@ -123,13 +124,13 @@ class Player extends React.Component {
     let params = {
       tv_id: state.playDetail.tv_id
     };
-    state.isUpDown = true;
     if (type == "next") {
       if (state.playDetail.idx == state.playList.length) {
         let msg = `抱歉电视剧没有下一集了哟~`;
         this.hint.show(msg);
         return;
       }
+      state.isUpDown = true;
       params.idx = state.playDetail.idx + 1;
       this.showMsg("正在为您加载下一集");
     }
@@ -139,6 +140,7 @@ class Player extends React.Component {
         this.hint.show(msg);
         return;
       }
+      state.isUpDown = true;
       params.idx = state.playDetail.idx - 1;
       this.showMsg("正在为您加载上一集");
     }
@@ -147,30 +149,33 @@ class Player extends React.Component {
   }
   async getTvDetail(params) {
     let state = this.state;
-    console.log("getTvDetail");
     try {
+      console.log(params)
       let ret = await getTeleplayPlay(params);
-      state.playDetail = ret.data.play_detail;
+      state.playDetail = JSON.parse(JSON.stringify(ret.data.play_detail));
       state.playList = ret.data.play_list;
-      state.uri = ret.data.play_detail.link;
+      state.uri = `${this.baseurl}/public/tv/${state.playDetail.word}/${state.playDetail.link}`;
+      console.log(state.uri);
       setTimeout(() => {
         this.setState({
           playEnd: false,
           paused: false,
           isUpDown: false,
+          hintText: ""
         })
       }, this.player.controlTimeoutDelay);
+      this.setState({ state });
+      this.forceUpdate();
     } catch (e) {
       let msg = `获取资源失败`;
       console.log(msg, e);
     }
-    this.setState({ state });
   }
   _enableTVEventHandler() {
     console.log("enable ")
     this._tvEventHandler = new TVEventHandler();
     this._tvEventHandler.enable(this, function (cmp, evt) {
-      console.log(evt)
+      console.log(evt);
       if (evt && evt.eventType === 'right') {
         cmp.advanceHandle();
       } else if (evt && evt.eventType === 'up') {
@@ -191,6 +196,9 @@ class Player extends React.Component {
   showMsg(msg) {
     let state = this.state;
     state.showControls = true;
+    if (this.player.controlTimeout) {
+      this.resetControlTimeout();
+    };
     state.paused = true;
     state.hintText = msg;
     this.setState(state);
@@ -281,7 +289,7 @@ class Player extends React.Component {
         <View style={[styles.fullScreen]}>
           <Video
             ref={e => this.video = e}
-            source={{ uri: uri }}
+            source={{ uri: uri}}
             paused={paused}
             muted={muted}
             style={[styles.fullScreen, { zIndex: 1 }]}
@@ -292,7 +300,7 @@ class Player extends React.Component {
             repeat={false}
             resizeMode="contain"
             bufferConfig={{
-              minBufferMs: 15000,
+              minBufferMs: 20000,  
               maxBufferMs: 50000,
               bufferForPlaybackMs: 2500,
               bufferForPlaybackAfterRebufferMs: 5000

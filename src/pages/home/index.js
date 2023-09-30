@@ -82,7 +82,7 @@ class Home extends React.Component {
   }
   async componentDidMount() {
     let state = this;
-    console.log("componentDidMounts")
+    console.log("componentDidMounts");
     try {
       let ret1 = await getTeleplayClassify();
       let ret2 = await getMovieClassify();
@@ -96,7 +96,7 @@ class Home extends React.Component {
       this.setState(state);
     } catch (e) {
       let msg = `获取数据失败`;
-      this.hint.show(msg, "red");
+      // this.hint.show(msg, "red");
       console.log(msg, e);
     }
   }
@@ -124,7 +124,7 @@ class Home extends React.Component {
     return (
       <View style={{ marginBottom: 10 }}>
         <Item
-          source={{ uri: `${this.baseurl}/public/` + item.pic }}
+          source={{ uri: `${this.baseurl}/public/tv_img/` + item.pic }}
           onPress={() => this.props.navigation.navigate("Detail", { id: item.id, current_show: this.state.current_show })}
           title={item.name} />
       </View>

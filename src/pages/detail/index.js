@@ -74,15 +74,15 @@ class Detail extends React.Component {
           </View>
           <View style={{ display: "flex", flexDirection: "row", marginBottom: 10, paddingHorizontal: 20, width: "100%", }}>
             <View style={{ marginRight: 10 }}>
-              <Image style={{ width: 180, height: 250, borderRadius: 5 }} source={{ uri: `${this.baseurl}/public/` + film_data.pic }} />
+              <Image style={{ width: 180, height: 250, borderRadius: 5 }} source={{ uri: `${this.baseurl}/public/tv_img/` + film_data.pic }} />
             </View>
             <View style={{ flex: 1, backgroundColor: "rgba(255, 255,255, 0.8)", padding: 10, borderRadius: 5 }}>
               <Text style={{ color: "black", fontSize: 22 }}>{film_data.name}</Text>
               <Text style={{ color: "black", fontSize: 14 }}>{this.props.route.params.current_show == "teleplay" ? "电视剧" : "电影"}</Text>
-              <Text style={{ color: "black", fontSize: 14 }}>{film_data.actor}</Text>
-              <Text style={{ color: "black", fontSize: 14 }}>{film_data.director}</Text>
+              <Text style={{ color: "black", fontSize: 14 }}>{film_data.actors}</Text>
+              <Text style={{ color: "black", fontSize: 14 }}>{film_data.score}</Text>
               <Text style={{ fontSize: 12, color: "black" }}>
-                蟹堡王毗邻本店的二号店即将开张了！海绵宝宝满心期待，以为分店经理一职非自己莫属，然而蟹老板却以他不够成熟为理由，将分店交给章鱼哥打理。同时看着蟹堡王做大的痞老板再出毒计，他偷走了海王星国王的王冠，并嫁祸蟹老板，盛怒的海王星要处死蟹老板，但为了拿回王冠，给忠诚的海绵宝宝和派大星六天时间，让他们去无人能够生还的贝壳城取回王冠。而痞老板得逞后偷走了蟹老板的蟹黄堡配方，生意迅速大热，他趁机把能够操纵思想的头盔赠送给顾客们，要通过控制海洋生物称霸世界。另一面，海绵宝宝和派大星踏上了无厘头又凶险万分的寻冠之路，前往传说中独眼巨人栖息的贝壳城……
+                {film_data.desc}
               </Text>
             </View>
           </View>
