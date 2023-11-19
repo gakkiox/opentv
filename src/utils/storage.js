@@ -17,3 +17,24 @@ export async function getItem(key) {
     return {msg: '获取失败', status: false};
   }
 }
+
+export async function clear() {
+  try {
+    await AsyncStorage.clear();
+  } catch (e) {
+    console.log(e);
+    return {msg: '清理失败', status: false};
+  }
+}
+export async function remove(key) {
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (e) {
+    console.log(e);
+    return {msg: '删除失败', status: false};
+  }
+}
+
+/**
+ * baseurl  服务器基础URL
+ */

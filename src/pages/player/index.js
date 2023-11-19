@@ -20,18 +20,20 @@ class Player extends React.Component {
       duration: 0,
       currentTime: 0,
       showControls: true,
+      progress: 0,
+      seeking: false,
       playEnd: false,
       playDetail: {},
       playList: [],
       listEnd: false,
       hintText: '',
-      uri: 'http://192.168.1.20:8445/a05.mp4',
+      uri: 'http://192.168.1.220:7001/public',
     };
     this.baseurl = global.baseurl;
     this.player = {
       controlTimeout: null,
       controlTimeoutDelay: 3000,
-      step: 5,
+      step: 10,
       timeoutHandle: null,
     };
     this.opts = {};
@@ -49,6 +51,7 @@ class Player extends React.Component {
     let state = this.state;
     state.duration = ev.duration;
     state.paused = false;
+    state.progress = 0;
     state.hintText = '';
     if (state.showControls) {
       this.resetControlTimeout();
@@ -58,6 +61,9 @@ class Player extends React.Component {
   _onProgress(ev) {
     let state = this.state;
     state.currentTime = ev.currentTime;
+    if (!state.seeking) {
+      state.progress = ev.currentTime;
+    }
     this.setState(state);
   }
   _onEnd() {
@@ -66,6 +72,11 @@ class Player extends React.Component {
   _onError(e) {
     console.log(e);
     this.hint.show('播放加载视频失败', 'err');
+  }
+  _onSeek(params) {
+    let state = this.state;
+    state.currentTime = params.currentTime;
+    this.setState(state);
   }
   _hideControls() {
     let state = this.state;
@@ -93,47 +104,55 @@ class Player extends React.Component {
     }
     this.setState(state);
   }
-  advanceHandle() {
+
+  playFastBack(type) {
     let state = this.state;
-    if (state.duration - state.currentTime < this.player.step) {
-      this.video.seek(state.duration - 1);
-      this.setState({currentTime: state.duration - 1});
-      return;
-    }
-    this.video.seek(state.currentTime + this.player.step);
-    state.currentTime += this.player.step;
     state.showControls = true;
-    if (this.player.controlTimeout) {
-      this.resetControlTimeout();
+    state.seeking = true;
+    this.setState(state);
+    if (type == 'fast') {
+      // 快进
+      if (state.duration - state.progress < this.player.step) {
+        state.progress = state.duration - 1;
+        this.seekHandle(state);
+        return;
+      }
+      state.progress += this.player.step;
+    }
+    if (type == 'back') {
+      // 快进
+      if (state.progress < this.player.step) {
+        state.progress = 0;
+        this.seekHandle(state);
+        return;
+      }
+      state.progress -= this.player.step;
     }
     this.setState(state);
+    clearTimeout(this.player.timeoutHandle);
+    this.player.timeoutHandle = setTimeout(() => {
+      this.seekHandle(state);
+    }, 1500);
   }
-  recoilHandle() {
-    let state = this.state;
-    if (state.currentTime < this.player.step) {
-      this.video.seek(0);
-      this.setState({currentTime: 0});
-      return;
-    }
-    this.video.seek(state.currentTime - this.player.step);
-    state.currentTime -= this.player.step;
-    state.showControls = true;
-    if (this.player.controlTimeout) {
-      this.resetControlTimeout();
+  seekHandle(state) {
+    this.video.seek(state.progress);
+    state.currentTime = state.progress;
+    state.seeking = false;
+    if (state.showControls) {
+      this.setControlTimeout();
     }
     this.setState(state);
   }
   _enableTVEventHandler() {
-    console.log('enable ');
     this._tvEventHandler = new TVEventHandler();
     this._tvEventHandler.enable(this, function (cmp, evt) {
       console.log(evt);
       if (evt && evt.eventType === 'right') {
-        cmp.advanceHandle();
+        cmp.playFastBack('fast');
       } else if (evt && evt.eventType === 'up') {
         cmp.playNextPrev('prev');
       } else if (evt && evt.eventType === 'left') {
-        cmp.recoilHandle();
+        cmp.playFastBack('back');
       } else if (evt && evt.eventType === 'down') {
         cmp.playNextPrev('next');
       } else if (evt && evt.eventType === 'select') {
@@ -246,6 +265,7 @@ class Player extends React.Component {
       uri,
       playDetail,
       hintText,
+      progress,
     } = this.state;
     return (
       <TouchableOpacity
@@ -296,8 +316,7 @@ class Player extends React.Component {
               <View
                 style={{flex: 1, flexDirection: 'row', paddingHorizontal: 10}}>
                 <Text style={{textAlign: 'center'}}>
-                  {this.renderMinutes(currentTime)}:
-                  {this.renderSecond(currentTime)}
+                  {this.renderMinutes(progress)}:{this.renderSecond(progress)}
                 </Text>
                 <View
                   style={{
@@ -316,9 +335,7 @@ class Player extends React.Component {
                       style={[
                         styles.dot,
                         {
-                          left: `${((currentTime / duration) * 100).toFixed(
-                            2,
-                          )}%`,
+                          left: `${((progress / duration) * 100).toFixed(2)}%`,
                         },
                       ]}></View>
                   </View>

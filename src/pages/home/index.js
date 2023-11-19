@@ -99,6 +99,7 @@ class Home extends React.Component {
       let ret1 = await getTeleplayClassify();
       let ret2 = await getMovieClassify();
       let ret3 = await getTeleplayList({limit: this.limit, offset: 1});
+
       state.list = ret3.data.rows;
       state.data_total = ret3.data.total;
       state.tv_class = ret1.data;
@@ -112,9 +113,9 @@ class Home extends React.Component {
       console.log(msg, e);
     }
   }
-
   renderHeader() {
     let {classify_list} = this.state;
+    return <View></View>;
     if (this.state.current_show == 'teleplay') {
       return <View></View>;
     }
@@ -148,6 +149,15 @@ class Home extends React.Component {
       </View>
     );
   }
+  renderNoData() {
+    if (this.state.data_total < 1) {
+      return (
+        <View style={{alignItems: "center", width: "100%", paddingTop: 20}}>
+          <Text style={{color: "grey", fontSize: 16}}>暂时该分类还没有影视资源哟！</Text>
+        </View>
+      );
+    }
+  }
   render() {
     let {list} = this.state;
     return (
@@ -178,9 +188,17 @@ class Home extends React.Component {
                   this.props.navigation.navigate('Setting')
                 }></HeadBtn>
             </View>
+            <View>
+              <HeadBtn
+                title="历史观看"
+                onPress={() =>
+                  this.props.navigation.navigate('History')
+                }></HeadBtn>
+            </View>
           </View>
           {this.renderHeader()}
           <View style={{flex: 1, display: 'flex', flexDirection: 'row'}}>
+            {this.renderNoData()}
             <FlatList
               onEndReachedThreshold={1}
               showsVerticalScrollIndicator={false}

@@ -30,7 +30,7 @@ class HeadBtnComponent extends React.Component {
           onPress={this.props.onPress}>
           <View
             style={{
-              width: 80,
+              width: 90,
               height: 45,
               display: 'flex',
               flexDirection: 'row',

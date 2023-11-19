@@ -1,41 +1,41 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  TextInput,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Button,
-} from 'react-native';
-import Hint from '../components/hint';
-
+import {View, ScrollView, Image, StyleSheet, Text} from 'react-native';
+import Cell from './components/cell.js';
+import Icon from 'react-native-vector-icons/Feather';
 class Setting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ip: null,
-      is_focus: false,
+      cellKey: "setting",
     };
+    this.cellData = {
+      "setting": {
+        name: "settings",
+        text: "设置页面"
+      },
+      "serverSetting": {
+        name: "server",
+        text: "重新设置服务器IP、端口"
+      },
+      "playTest": {
+        name: "film",
+        text: "测试视频播放"
+      },
+      
+      "otherSetting": {
+        name: "sliders",
+        text: "设置其他内容"
+      }
+    }
   }
-  changeHandle(text) {
+  focusCellHandle(key) {
     this.setState({
-      ip: text,
-    });
+      cellKey: key
+    })
   }
-  focusHandle() {
-    this.ipinput.focus();
-  }
-  pressHandle() {
-    global.ip = this.state.ip;
-  }
-  componentDidMount() {
-    this.setState({
-      ip: global.ip,
-    });
-  }
+
   render() {
-    let {ip} = this.state;
+    let { cellKey } = this.state;
     return (
       <View
         style={{
@@ -44,33 +44,51 @@ class Setting extends React.Component {
           position: 'relative',
           backgroundColor: 'black',
         }}>
-        <Hint />
-        <View style={[styles.container]}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              borderRadius: 4,
-              paddingHorizontal: 20,
-            }}>
-            <View>
-              <Text style={{color: 'black'}}>服务器IP</Text>
+        <View
+          style={{
+            height: '100%',
+            width: '100%',
+            padding: 30,
+            position: 'relative',
+            zIndex: 10,
+          }}>
+          <View style={{marginBottom: 20}}>
+            <Text style={{color: 'white', fontSize: 30}}>设置</Text>
+          </View>
+          <View style={{flex: 1, width: '100%', flexDirection: 'row'}}>
+            <View style={{flex: 0.6, padding: 20}}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}>
+                <Cell
+                  title="服务器设置"
+                  focusCell={() => this.focusCellHandle('serverSetting')}
+                  pressCell={()=>{this.props.navigation.navigate("serverSetting")}}
+                />
+                <Cell
+                  title="测试播放"
+                  focusCell={() => this.focusCellHandle('playTest')}
+                  pressCell={()=>{this.props.navigation.navigate("playTest")}}
+                />
+                <Cell
+                  title="其他设置"
+                  focusCell={() => this.focusCellHandle('otherSetting')}
+                  pressCell={()=>{this.props.navigation.navigate("otherSetting")}}
+                />
+              </ScrollView>
             </View>
-            <TouchableOpacity
-              onFocus={this.focusHandle.bind(this)}
-              activeOpacity={1}
-              style={{flex: 1, marginHorizontal: 10}}>
-              <TextInput
-                ref={e => (this.ipinput = e)}
-                keyboardType="numeric"
-                onChangeText={this.changeHandle.bind(this)}
-                value={ip}
-                style={{color: 'black', width: '100%'}}
-              />
-            </TouchableOpacity>
-            <View>
-              <Button onPress={this.pressHandle.bind(this)} title="修改" />
+            <View style={{flex: 0.4}}>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                }}>
+                <Icon name={this.cellData[cellKey].name} size={130} />
+                <Text style={{color: 'white', fontSize: 20, marginTop: 20}}>
+                {this.cellData[cellKey].text}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -85,15 +103,6 @@ class Setting extends React.Component {
   }
 }
 var styles = StyleSheet.create({
-  container: {
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-    zIndex: 10,
-    padding: 60,
-  },
   fullScreen: {
     position: 'absolute',
     top: 0,
