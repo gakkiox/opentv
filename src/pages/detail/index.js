@@ -15,8 +15,8 @@ class Detail extends React.Component {
   async componentDidMount() {
     try {
       let state = this.state;
-      let {current_show, id} = this.props.route.params;
-      if (current_show == 'teleplay') {
+      let {source_type, id} = this.props.route.params;
+      if (source_type == 'teleplay') {
         let ret = await getTeleplayDetail({id});
         state.film_data = ret.data;
       } else {
@@ -32,9 +32,9 @@ class Detail extends React.Component {
     }
   }
   renderPlaylist() {
-    let {current_show} = this.props.route.params;
+    let {source_type} = this.props.route.params;
     let {film_data} = this.state;
-    if (current_show == 'teleplay') {
+    if (source_type == 'teleplay') {
       return (
         <View>
           <Text style={{marginBottom: 10, fontSize: 18}}>剧集</Text>
@@ -49,7 +49,7 @@ class Detail extends React.Component {
                         this.props.navigation.navigate('Player', {
                           tv_id: film_data.id,
                           idx: item.idx,
-                          current_show,
+                          source_type,
                         })
                       }
                     />
@@ -114,7 +114,7 @@ class Detail extends React.Component {
                 {film_data.name}
               </Text>
               <Text style={{color: 'black', fontSize: 14}}>
-                {this.props.route.params.current_show == 'teleplay'
+                {this.props.route.params.source_type == 'teleplay'
                   ? '电视剧'
                   : '电影'}
               </Text>

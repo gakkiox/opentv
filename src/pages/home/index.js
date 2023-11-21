@@ -26,7 +26,7 @@ class Home extends React.Component {
       classify_list: [],
       tv_class: [],
       movie_class: [],
-      current_show: 'teleplay',
+      source_type: 'teleplay',
       list: [],
       data_total: 0,
       offset: 1,
@@ -40,14 +40,14 @@ class Home extends React.Component {
 
   async toggleMovie() {
     let state = this;
-    if (state.current_show == 'movie') {
+    if (state.source_type == 'movie') {
       return;
     }
     try {
       let ret = await getMovieList({limit: this.limit, offset: 1});
       state.list = ret.data.rows;
       state.data_total = ret.data.total;
-      state.current_show = 'movie';
+      state.source_type = 'movie';
       state.classify_list = state.movie_class;
       this.setState(state);
     } catch (e) {
@@ -58,7 +58,7 @@ class Home extends React.Component {
   }
   async toggleTv() {
     let state = this;
-    if (state.current_show == 'teleplay') {
+    if (state.source_type == 'teleplay') {
       return;
     }
     try {
@@ -66,7 +66,7 @@ class Home extends React.Component {
       state.list = ret.data.rows;
       state.data_total = ret.data.total;
       state.classify_list = state.tv_class;
-      state.current_show = 'teleplay';
+      state.source_type = 'teleplay';
       this.setState(state);
     } catch (e) {
       let msg = `获取电视剧列表失败`;
@@ -78,7 +78,7 @@ class Home extends React.Component {
     let state = this.state;
     try {
       ++state.offset;
-      if (state.current_show == 'teleplay') {
+      if (state.source_type == 'teleplay') {
         let ret = await getTeleplayList({
           limit: this.limit,
           offset: state.offset,
@@ -127,7 +127,7 @@ class Home extends React.Component {
   renderHeader() {
     let {classify_list} = this.state;
     return <View></View>;
-    if (this.state.current_show == 'teleplay') {
+    if (this.state.source_type == 'teleplay') {
       return <View></View>;
     }
     return (
@@ -151,7 +151,7 @@ class Home extends React.Component {
       that.props.navigation.navigate('Player', {
         tv_id: lastView.id,
         idx: lastView.idx,
-        current_show: lastView.type,
+        source_type: lastView.type,
       });
       that.setState({showLastView: false});
     }
@@ -177,7 +177,7 @@ class Home extends React.Component {
           onPress={() =>
             this.props.navigation.navigate('Detail', {
               id: item.id,
-              current_show: this.state.current_show,
+              source_type: this.state.source_type,
             })
           }
           title={item.name}

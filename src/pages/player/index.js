@@ -228,16 +228,16 @@ class Player extends React.Component {
     }
   }
   async componentDidMount() {
-    let {current_show, tv_id, idx} = this.props.route.params;
+    let {source_type, tv_id, idx} = this.props.route.params;
     let state = this.state;
     this.touchView.focus();
     this._enableTVEventHandler();
     try {
-      if (current_show == 'teleplay') {
+      if (source_type == 'teleplay') {
         await this.getTvDetail({tv_id, idx});
       }
       await setItem("lastView", {
-        type: current_show,
+        type: source_type,
         id: tv_id,
         name: state.playDetail.name,
         idx: idx,
