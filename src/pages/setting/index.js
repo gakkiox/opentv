@@ -66,7 +66,7 @@ class Setting extends React.Component {
                   pressCell={()=>{this.props.navigation.navigate("serverSetting")}}
                 />
                 <Cell
-                  title="测试播放"
+                  title="播放测试"
                   focusCell={() => this.focusCellHandle('playTest')}
                   pressCell={()=>{this.props.navigation.navigate("playTest")}}
                 />

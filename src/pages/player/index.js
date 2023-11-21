@@ -10,6 +10,7 @@ import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Feather';
 import Hint from '../components/hint.js';
 import {getTeleplayPlay} from '../../api/index';
+import {setItem} from "../../utils/storage.js"
 
 class Player extends React.Component {
   constructor(props) {
@@ -189,7 +190,6 @@ class Player extends React.Component {
   async getTvDetail(params) {
     let state = this.state;
     try {
-      console.log(params);
       let ret = await getTeleplayPlay(params);
       state.playDetail = ret.data.play_detail;
       state.playList = ret.data.play_list;
@@ -236,6 +236,14 @@ class Player extends React.Component {
       if (current_show == 'teleplay') {
         await this.getTvDetail({tv_id, idx});
       }
+      await setItem("lastView", {
+        type: current_show,
+        id: tv_id,
+        name: state.playDetail.name,
+        idx: idx,
+        play_time: null,
+      })
+      global.showLastView = false;
     } catch (e) {
       let msg = `获取资源详情失败`;
       console.log(msg, e);

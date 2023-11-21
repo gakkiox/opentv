@@ -15,7 +15,7 @@ class Init extends React.Component {
     super(props);
     this.state = {};
   }
-  async init() {
+  async initBaseUrl() {
     let url = 'http://192.168.1.220:7002';
     global.defaulturl = url;
     let urlRet = await getItem('baseurl');
@@ -25,10 +25,29 @@ class Init extends React.Component {
       global.baseurl = url;
       await setItem('baseurl', baseurl);
     }
-   let t = setTimeout(()=>{
-    clearTimeout(t);
-    this.props.navigation.navigate("Home");
-   }, 2000)
+  }
+  async initLastView() {
+    let lastView = {
+      type: 'tv',
+      id: null,
+      idx: null,
+      playTime: null,
+      name: null,
+    };
+    let ret = await getItem('lastView');
+    global.showLastView = true;
+    if (ret.value == null) {
+      await setItem('lastView', lastView);
+      global.showLastView = false;
+    }
+  }
+  async init() {
+    await this.initBaseUrl();
+    await this.initLastView();
+    let t = setTimeout(() => {
+      clearTimeout(t);
+      this.props.navigation.navigate('Home')
+    }, 2000);
   }
   componentDidMount() {
     this.init();

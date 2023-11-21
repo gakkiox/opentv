@@ -1,5 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export async function setItem(key, value) {
+  if (typeof value == 'object') {
+    value = JSON.stringify(value);
+  }
   try {
     await AsyncStorage.setItem(key, value);
     return {msg: '保存成功', status: true};
@@ -11,13 +14,23 @@ export async function setItem(key, value) {
 export async function getItem(key) {
   try {
     let value = await AsyncStorage.getItem(key);
+    let json = stringIsObject(value);
+    if (json) {
+      value = json;
+    }
     return {msg: '获取成功', status: true, value};
   } catch (e) {
     console.log(e);
     return {msg: '获取失败', status: false};
   }
 }
-
+function stringIsObject(val) {
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    return false;
+  }
+}
 export async function clear() {
   try {
     await AsyncStorage.clear();
@@ -37,4 +50,5 @@ export async function remove(key) {
 
 /**
  * baseurl  服务器基础URL
+ * lastView 上次观看 {type, id, idx, play_time, name}
  */

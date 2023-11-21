@@ -17,6 +17,7 @@ import {
   getTeleplayList,
   getMovieList,
 } from '../../api/index';
+import {getItem} from '../../utils/storage';
 
 class Home extends React.Component {
   constructor(props) {
@@ -29,6 +30,8 @@ class Home extends React.Component {
       list: [],
       data_total: 0,
       offset: 1,
+      lastView: false,
+      showLastView: false,
     };
     this.numColumns = Math.floor((global.windowWidth - 100) / 140);
     this.limit = 20;
@@ -94,12 +97,17 @@ class Home extends React.Component {
   }
   async componentDidMount() {
     let state = this;
-    console.log('componentDidMounts');
+
     try {
       let ret1 = await getTeleplayClassify();
       let ret2 = await getMovieClassify();
       let ret3 = await getTeleplayList({limit: this.limit, offset: 1});
-
+      let lastViewRet = await getItem('lastView');
+      state.showLastView = global.showLastView;
+      state.lastView = lastViewRet.value;
+      if (lastViewRet.value.id == null) {
+        state.showLastView = false;
+      }
       state.list = ret3.data.rows;
       state.data_total = ret3.data.total;
       state.tv_class = ret1.data;
@@ -112,6 +120,9 @@ class Home extends React.Component {
       // this.hint.show(msg, "red");
       console.log(msg, e);
     }
+  }
+  componentWillUnmount() {
+    
   }
   renderHeader() {
     let {classify_list} = this.state;
@@ -133,6 +144,31 @@ class Home extends React.Component {
       </View>
     );
   }
+  renderLastView() {
+    let that = this;
+    let {showLastView, lastView} = that.state;
+    function gotoPlayer() {
+      that.props.navigation.navigate('Player', {
+        tv_id: lastView.id,
+        idx: lastView.idx,
+        current_show: lastView.type,
+      });
+      that.setState({showLastView: false});
+    }
+    if (showLastView) {
+      return (
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View>
+            <Btn title="继续观看" onPress={gotoPlayer}></Btn>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text>未看完的</Text>
+            <Text style={{marginLeft: 5, color: 'red'}}>{lastView.name}</Text>
+          </View>
+        </View>
+      );
+    }
+  }
   renderItem(item) {
     return (
       <View style={{marginBottom: 10}}>
@@ -152,8 +188,10 @@ class Home extends React.Component {
   renderNoData() {
     if (this.state.data_total < 1) {
       return (
-        <View style={{alignItems: "center", width: "100%", paddingTop: 20}}>
-          <Text style={{color: "grey", fontSize: 16}}>暂时该分类还没有影视资源哟！</Text>
+        <View style={{alignItems: 'center', width: '100%', paddingTop: 20}}>
+          <Text style={{color: 'grey', fontSize: 16}}>
+            暂时该分类还没有影视资源哟！
+          </Text>
         </View>
       );
     }
@@ -197,6 +235,8 @@ class Home extends React.Component {
             </View>
           </View>
           {this.renderHeader()}
+          {this.renderLastView()}
+          <View></View>
           <View style={{flex: 1, display: 'flex', flexDirection: 'row'}}>
             {this.renderNoData()}
             <FlatList
