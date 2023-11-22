@@ -51,4 +51,5 @@ export async function remove(key) {
 /**
  * baseurl  服务器基础URL
  * lastView 上次观看 {type, id, idx, play_time, name}
+ * history []  {type, id, idx, pic, name,}
  */

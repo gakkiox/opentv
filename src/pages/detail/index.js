@@ -10,7 +10,7 @@ class Detail extends React.Component {
     this.state = {
       film_data: {teleplay_list: []},
     };
-    this.baseurl = global.baseurl;
+    this.picPrefix = global.picPrefix;
   }
   async componentDidMount() {
     try {
@@ -37,7 +37,7 @@ class Detail extends React.Component {
     if (source_type == 'teleplay') {
       return (
         <View>
-          <Text style={{marginBottom: 10, fontSize: 18}}>剧集</Text>
+          <Text style={{marginBottom: 10, fontSize: 18, color: "#fff"}}>剧集</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <View style={{flexDirection: 'row'}}>
               {film_data.teleplay_list.map((item, index) => {
@@ -45,6 +45,10 @@ class Detail extends React.Component {
                   <View style={{marginRight: 4}} key={index}>
                     <Btn
                       title={`${index + 1}`}
+                      borderRadius={20}
+                      paddingVertical={5}
+                      paddingHorizontal={20}
+                      marginRight={6}
                       onPress={() =>
                         this.props.navigation.navigate('Player', {
                           tv_id: film_data.id,
@@ -87,7 +91,13 @@ class Detail extends React.Component {
               paddingHorizontal: 20,
               marginVertical: 10,
             }}>
-            <Btn title="返回" onPress={() => this.props.navigation.goBack()} />
+            <Btn
+              borderRadius={20}
+              paddingVertical={5}
+              paddingHorizontal={20}
+              title="返回首页"
+              onPress={() => this.props.navigation.goBack()}
+            />
           </View>
           <View
             style={{
@@ -100,7 +110,7 @@ class Detail extends React.Component {
             <View style={{marginRight: 10}}>
               <Image
                 style={{width: 180, height: 250, borderRadius: 5}}
-                source={{uri: `${this.baseurl}/public/tv_img/` + film_data.pic}}
+                source={{uri: this.picPrefix + film_data.pic}}
               />
             </View>
             <View
@@ -129,7 +139,7 @@ class Detail extends React.Component {
               </Text>
             </View>
           </View>
-          <View style={{width: '100%', paddingHorizontal: 20}}>
+          <View style={{width: '100%', paddingHorizontal: 20, }}>
             {this.renderPlaylist()}
           </View>
         </View>

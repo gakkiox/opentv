@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Dimensions} from 'react-native';
+import {View, Text, Dimensions, Image} from 'react-native';
 import {getItem, setItem, clear} from '../../utils/storage';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -25,6 +25,8 @@ class Init extends React.Component {
       global.baseurl = url;
       await setItem('baseurl', baseurl);
     }
+    global.picPrefix = `${global.baseurl}/public/tv_img/`;
+    global.tvPrefix = `${global.baseurl}/public/tv/`;
   }
   async initLastView() {
     let lastView = {
@@ -41,16 +43,27 @@ class Init extends React.Component {
       global.showLastView = false;
     }
   }
+  async initHistory() {
+    let history = [];
+    let ret = await getItem('history');
+    if (ret.value == null) {
+      await setItem('history', history);
+    }
+  }
   async init() {
     await this.initBaseUrl();
     await this.initLastView();
+    await this.initHistory();
     let t = setTimeout(() => {
       clearTimeout(t);
-      this.props.navigation.navigate('Home')
+      this.props.navigation.navigate('Home');
     }, 2000);
   }
-  componentDidMount() {
-    this.init();
+  async componentDidMount() {
+    await this.init();
+    this.props.navigation.addListener('focus', () => {
+      this.props.navigation.navigate('Home');
+    });
   }
   render() {
     return (
@@ -62,6 +75,10 @@ class Init extends React.Component {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
+        <Image
+          style={{width: 50, height: 50, marginBottom: 10}}
+          source={require('../../assets/loading.gif')}
+        />
         <Text style={{color: 'white'}}>加载中...</Text>
       </View>
     );

@@ -8,16 +8,29 @@ class BtnComponent extends React.Component {
       is_focus: false,
     };
   }
+  static defaultProps = {
+    borderRadius: 0,
+    borderColor: "transparent",
+    borderWidth: 0,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingVertical: "auto",
+    paddingHorizontal: "auto",
+    fontSize: 16,
+    color: "white",
+    marginRight: "auto"
+  };
   render() {
-    let {is_focus} = this.state;
+    let {is_focus} = this.state,
+      props = this.props;
     return (
       <View
         style={{
           overflow: 'hidden',
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: 'transparent',
-          backgroundColor: is_focus ? 'white' : 'transparent',
+          borderRadius: props.borderRadius,
+          borderWidth: props.borderWidth,
+          borderColor: props.borderColor,
+          backgroundColor: is_focus ? 'white' : props.backgroundColor,
+          marginRight: props.marginRight
         }}>
         <TouchableNativeFeedback
           onFocus={() => {
@@ -26,11 +39,11 @@ class BtnComponent extends React.Component {
           onBlur={() => {
             this.setState({is_focus: false});
           }}
-          onPress={this.props.onPress}>
+          onPress={props.onPress}>
           <View
             style={{
-              paddingVertical: 5,
-              paddingHorizontal: 20,
+              paddingVertical: props.paddingVertical,
+              paddingHorizontal: props.paddingHorizontal,
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
@@ -39,8 +52,8 @@ class BtnComponent extends React.Component {
             }}>
             <Text
               style={{
-                color: is_focus ? global.theme.color1 : 'white',
-                fontSize: 16,
+                color: is_focus ? global.theme.color1 : props.color,
+                fontSize: props.fontSize,
                 marginRight: 4,
               }}>
               {this.props.title}

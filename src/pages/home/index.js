@@ -35,7 +35,7 @@ class Home extends React.Component {
     };
     this.numColumns = Math.floor((global.windowWidth - 100) / 140);
     this.limit = 20;
-    this.baseurl = global.baseurl;
+    this.picPrefix = global.picPrefix;
   }
 
   async toggleMovie() {
@@ -121,9 +121,7 @@ class Home extends React.Component {
       console.log(msg, e);
     }
   }
-  componentWillUnmount() {
-    
-  }
+  componentWillUnmount() {}
   renderHeader() {
     let {classify_list} = this.state;
     return <View></View>;
@@ -157,13 +155,25 @@ class Home extends React.Component {
     }
     if (showLastView) {
       return (
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View>
-            <Btn title="继续观看" onPress={gotoPlayer}></Btn>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 10,
+          }}>
+          <View style={{marginRight: 5}}>
+            <Btn
+              borderRadius={20}
+              paddingVertical={5}
+              paddingHorizontal={15}
+              backgroundColor="transparent"
+              title="继续观看"
+              onPress={gotoPlayer}></Btn>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text>未看完的</Text>
-            <Text style={{marginLeft: 5, color: 'red'}}>{lastView.name}</Text>
+            <Text style={{marginLeft: 5, color: 'red', }}>{lastView.name}</Text>
+            <Text>第{lastView.idx}集</Text>
           </View>
         </View>
       );
@@ -173,7 +183,7 @@ class Home extends React.Component {
     return (
       <View style={{marginBottom: 10}}>
         <Item
-          source={{uri: `${this.baseurl}/public/tv_img/` + item.pic}}
+          source={{uri: picPrefix + item.pic}}
           onPress={() =>
             this.props.navigation.navigate('Detail', {
               id: item.id,
@@ -228,7 +238,7 @@ class Home extends React.Component {
             </View>
             <View>
               <HeadBtn
-                title="历史观看"
+                title="观看记录"
                 onPress={() =>
                   this.props.navigation.navigate('History')
                 }></HeadBtn>
@@ -236,10 +246,10 @@ class Home extends React.Component {
           </View>
           {this.renderHeader()}
           {this.renderLastView()}
-          <View></View>
           <View style={{flex: 1, display: 'flex', flexDirection: 'row'}}>
             {this.renderNoData()}
             <FlatList
+
               onEndReachedThreshold={1}
               showsVerticalScrollIndicator={false}
               numColumns={this.numColumns}
