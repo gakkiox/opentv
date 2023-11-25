@@ -6,36 +6,39 @@ class Setting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cellKey: "setting",
+      cellKey: 'setting',
     };
     this.cellData = {
-      "setting": {
-        name: "settings",
-        text: "设置页面"
+      setting: {
+        name: 'settings',
+        text: '设置页面',
       },
-      "serverSetting": {
-        name: "server",
-        text: "重新设置服务器IP、端口"
+      serverSetting: {
+        name: 'server',
+        text: '重新设置服务器IP、端口',
       },
-      "playTest": {
-        name: "film",
-        text: "测试视频播放"
+      playTest: {
+        name: 'film',
+        text: '测试视频播放',
       },
-      
-      "otherSetting": {
-        name: "sliders",
-        text: "设置其他内容"
-      }
-    }
+      restoreDefault: {
+        name: "sunset",
+        text: '恢复默认',
+      },
+      otherSetting: {
+        name: 'sliders',
+        text: '设置其他内容',
+      },
+    };
   }
   focusCellHandle(key) {
     this.setState({
-      cellKey: key
-    })
+      cellKey: key,
+    });
   }
 
   render() {
-    let { cellKey } = this.state;
+    let {cellKey} = this.state;
     return (
       <View
         style={{
@@ -63,17 +66,30 @@ class Setting extends React.Component {
                 <Cell
                   title="服务器设置"
                   focusCell={() => this.focusCellHandle('serverSetting')}
-                  pressCell={()=>{this.props.navigation.navigate("serverSetting")}}
+                  pressCell={() => {
+                    this.props.navigation.navigate('serverSetting');
+                  }}
                 />
                 <Cell
                   title="播放测试"
                   focusCell={() => this.focusCellHandle('playTest')}
-                  pressCell={()=>{this.props.navigation.navigate("playTest")}}
+                  pressCell={() => {
+                    this.props.navigation.navigate('playTest');
+                  }}
+                />
+                <Cell
+                  title="所有设置恢复默认"
+                  focusCell={() => this.focusCellHandle('restoreDefault')}
+                  pressCell={() => {
+                    this.props.navigation.navigate('playTest');
+                  }}
                 />
                 <Cell
                   title="其他设置"
                   focusCell={() => this.focusCellHandle('otherSetting')}
-                  pressCell={()=>{this.props.navigation.navigate("otherSetting")}}
+                  pressCell={() => {
+                    this.props.navigation.navigate('otherSetting');
+                  }}
                 />
               </ScrollView>
             </View>
@@ -86,7 +102,7 @@ class Setting extends React.Component {
                 }}>
                 <Icon name={this.cellData[cellKey].name} size={130} />
                 <Text style={{color: 'white', fontSize: 20, marginTop: 20}}>
-                {this.cellData[cellKey].text}
+                  {this.cellData[cellKey].text}
                 </Text>
               </View>
             </View>

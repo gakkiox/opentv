@@ -49,6 +49,7 @@ class Detail extends React.Component {
                       paddingVertical={5}
                       paddingHorizontal={20}
                       marginRight={6}
+                      backgroundColor= "rgba(255,255,255,0.5)"
                       onPress={() =>
                         this.props.navigation.navigate('Player', {
                           tv_id: film_data.id,
@@ -95,6 +96,7 @@ class Detail extends React.Component {
               borderRadius={20}
               paddingVertical={5}
               paddingHorizontal={20}
+              backgroundColor= "rgba(255,255,255,0.5)"
               title="返回首页"
               onPress={() => this.props.navigation.goBack()}
             />
@@ -116,7 +118,7 @@ class Detail extends React.Component {
             <View
               style={{
                 flex: 1,
-                backgroundColor: 'rgba(255, 255,255, 0.8)',
+                backgroundColor: 'rgba(255, 255,255, 0.6)',
                 padding: 10,
                 borderRadius: 5,
               }}>

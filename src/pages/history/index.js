@@ -59,7 +59,21 @@ class History extends React.Component {
               borderWidth: 2,
               borderColor: focus_idx == index ? '#fff' : 'transparent',
               borderRadius: 5,
+              position: 'relative',
             }}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 10,
+                right: 10,
+                backgroundColor: '#0094ff',
+                zIndex: 10,
+                borderRadius: 5,
+                paddingHorizontal: 4,
+                paddingVertical: 2
+              }}>
+              <Text style={{fontSize: 14,  color: "white"}}>{item.source_type == 'teleplay' ? '电视剧' : '电影'}</Text>
+            </View>
             <Image
               style={{
                 resizeMode: 'cover',
@@ -80,7 +94,7 @@ class History extends React.Component {
             </Text>
             <Text style={{color: '#999'}}>
               上次观看到第
-              <Text style={{color: 'red'}}>{item.idx}</Text>集
+              <Text style={{color: '#fff200'}}>{item.idx}</Text>集
             </Text>
           </View>
         </TouchableOpacity>
@@ -128,8 +142,8 @@ class History extends React.Component {
         </View>
         <View style={[styles.fullScreen, {zIndex: 1}]}>
           <Image
-            style={{width: '100%', height: '100%', opacity: 0.4}}
-            source={require('../../assets/setting.jpg')}
+            style={{width: '100%', height: '100%', opacity: 0.7}}
+            source={require('../../assets/history.jpg')}
           />
         </View>
       </View>

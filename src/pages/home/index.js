@@ -33,7 +33,7 @@ class Home extends React.Component {
       lastView: false,
       showLastView: false,
     };
-    this.numColumns = Math.floor((global.windowWidth - 100) / 140);
+    this.numColumns = Math.floor((global.windowWidth - 100) / 140) ;
     this.limit = 20;
     this.picPrefix = global.picPrefix;
   }
@@ -160,6 +160,7 @@ class Home extends React.Component {
             flexDirection: 'row',
             alignItems: 'center',
             marginBottom: 10,
+            marginLeft: 15,
           }}>
           <View style={{marginRight: 5}}>
             <Btn
@@ -172,7 +173,7 @@ class Home extends React.Component {
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text>未看完的</Text>
-            <Text style={{marginLeft: 5, color: 'red', }}>{lastView.name}</Text>
+            <Text style={{marginLeft: 5, color: '#fff200'}}>{lastView.name}</Text>
             <Text>第{lastView.idx}集</Text>
           </View>
         </View>
@@ -191,6 +192,7 @@ class Home extends React.Component {
             })
           }
           title={item.name}
+          score={item.score}
         />
       </View>
     );
@@ -246,10 +248,16 @@ class Home extends React.Component {
           </View>
           {this.renderHeader()}
           {this.renderLastView()}
-          <View style={{flex: 1, display: 'flex', flexDirection: 'row'}}>
+          <View
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              paddingHorizontal: 20,
+            }}>
             {this.renderNoData()}
             <FlatList
-
+            //  contentContainerStyle={{justifyContent: "space-between"}}
               onEndReachedThreshold={1}
               showsVerticalScrollIndicator={false}
               numColumns={this.numColumns}
