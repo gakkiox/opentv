@@ -27,7 +27,6 @@ class VideoComponent extends React.Component {
     this.event = {
       onLoad: this._onLoad.bind(this),
       onProgress: this._onProgress.bind(this),
-      onEnd: this._onEnd.bind(this),
       onError: this._onError.bind(this),
       onSeek: this._onSeek.bind(this),
     };
@@ -44,10 +43,10 @@ class VideoComponent extends React.Component {
     pressUp: () => {},
     pressLeft: () => {},
     pressDown: () => {},
+    onEnd: () => {}
   };
 
   _onLoad(ev) {
-    console.log('video load');
     let state = this.state;
     state.duration = ev.duration;
     state.paused = false;
@@ -66,12 +65,8 @@ class VideoComponent extends React.Component {
     }
     this.setState(state);
   }
-  _onEnd() {
-    this.playNextPrev('next');
-  }
   _onError(e) {
-    console.log(e);
-    this.hint.show('播放加载视频失败', 'err');
+    console.log("Video error", e);
   }
   _onSeek(params) {
     let state = this.state;
@@ -246,7 +241,7 @@ class VideoComponent extends React.Component {
             }}
             ref={e => (this.video = e)}
             onLoad={this.event.onLoad}
-            onEnd={this.event.onEnd}
+            onEnd={props.onEnd}
             onError={this.event.onError}
             onProgress={this.event.onProgress}
             onSeek={this.event.onSeek}

@@ -11,7 +11,7 @@ class BtnComponent extends React.Component {
   static defaultProps = {
     borderRadius: 0,
     borderColor: "transparent",
-    borderWidth: 0,
+    borderWidth: 1,
     backgroundColor: "rgba(255,255,255,0.2)",
     paddingVertical: "auto",
     paddingHorizontal: "auto",

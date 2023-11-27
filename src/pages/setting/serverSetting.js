@@ -1,8 +1,10 @@
 import React from 'react';
-import {Text, View, Image, StyleSheet, Button, TextInput} from 'react-native';
+import {Text, View, Image, StyleSheet} from 'react-native';
 import Hint from '../components/hint';
-import {getItem, setItem} from '../../utils/storage';
+import {getItem, setItem} from '@/utils/storage';
 import InputCell from './components/inputCell';
+import Btn from '@/pages/components/btn.js';
+// import * as Updates from 'expo-updates';
 
 class Setting extends React.Component {
   constructor(props) {
@@ -20,16 +22,35 @@ class Setting extends React.Component {
       this.hint.show('您输入的IPV4地址不正确', 'red');
       return;
     }
-
-    if (isNaN(Number(this.state.port)) && 0 < Number(this.state.port) < 65536) {
+    let numPort = Number(this.state.port);
+    if (isNaN(numPort) && 0 < numPort && numPort < 65536) {
       this.hint.show('您输入的端口号不正确，0--65535之间哟', 'red');
       return;
     }
     let url = `http://${this.state.ip}:${this.state.port}`;
     await setItem('baseurl', url);
-    this.hint.show('修改服务器配置成功~')
+    this.hint.show('修改服务器配置成功~');
+    global.baseurl = url
+    this.props.navigation.reset({
+      index: 0,
+      routes: [{name: 'Init'}],
+    });
   }
+  async restoreDefault() {
+    let url = global.defaulturl;
+    this.setState({
+      ip: url.split('//')[1].split(':')[0],
+      port: url.split(':')[1],
+    });
+    global.baseurl = url
+    await setItem('baseurl', url);
+    this.hint.show('恢复默认设置成功');
+    this.props.navigation.reset({
+      index: 0,
+      routes: [{name: 'Init'}],
+    });
 
+  }
   async componentDidMount() {
     let baseurl = await getItem('baseurl');
     if (!baseurl.status) {
@@ -57,32 +78,64 @@ class Setting extends React.Component {
           <View>
             <Text style={{textAlign: 'center', fontSize: 28}}>服务器设置</Text>
           </View>
-          <View style={{justifyContent: 'center', flex: 1}}>
-            <View>
-              <InputCell
-                value={ip}
-                label="服务器IP："
-                changeValue={e => {
-                  this.setState({ip: e});
-                }}
-              />
-              <InputCell
-                value={port}
-                label="服务器端口："
-                changeValue={e => {
-                  this.setState({port: e});
-                }}
-              />
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                width: '60%',
+                height: 300,
+                borderRadius: 5,
+                paddingHorizontal: 50,
+                paddingVertical: 50,
+              }}>
+              <View style={{marginBottom: 15}}>
+                <InputCell
+                  value={ip}
+                  label="服务器   IP"
+                  changeValue={e => {
+                    this.setState({ip: e});
+                  }}
+                />
+              </View>
+              <View style={{marginBottom: 25}}>
+                <InputCell
+                  value={port}
+                  label="服务器端口"
+                  changeValue={e => {
+                    this.setState({port: e});
+                  }}
+                />
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <Btn
+                  paddingHorizontal={20}
+                  paddingVertical={8}
+                  backgroundColor="black"
+                  onPress={this.changeUrl.bind(this)}
+                  color="white"
+                  title="确认修改"
+                />
+                <Btn
+                  paddingHorizontal={20}
+                  paddingVertical={8}
+                  backgroundColor="black"
+                  onPress={this.restoreDefault.bind(this)}
+                  color="white"
+                  title="恢复默认"
+                />
+              </View>
             </View>
-            <Button
-              title="确认修改"
-              onPress={this.changeUrl.bind(this)}></Button>
           </View>
         </View>
         <View style={[styles.fullScreen, {zIndex: 1}]}>
           <Image
             style={{width: '100%', height: '100%', opacity: 0.4}}
-            source={require('../../assets/setting.jpg')}
+            source={require('@/assets/setting.jpg')}
           />
         </View>
       </View>

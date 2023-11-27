@@ -27,8 +27,9 @@ class Init extends React.Component {
       global.baseurl = urlRet.value;
     } else {
       global.baseurl = url;
-      await setItem('baseurl', baseurl);
+      await setItem('baseurl', url);
     }
+
     global.picPrefix = `${global.baseurl}/public/tv_img/`;
     global.tvPrefix = `${global.baseurl}/public/tv/`;
   }

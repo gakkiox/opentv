@@ -28,7 +28,7 @@ class Player extends React.Component {
       playList: [],
       listEnd: false,
       hintText: '',
-      uri: "'http://192.168.1.220:8440/public/tv/1fa5cea063d84891/12ba9818f21da1c8/index.m3u8",
+      uri: "http://192.168.1.220:8440/public/tv/1fa5cea063d84891/12ba9818f21da1c8/index.m3u8",
     };
     this.tvPrefix = global.tvPrefix;
     this.player = {
