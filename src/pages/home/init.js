@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Text, Dimensions, Image} from 'react-native';
-import {getItem, setItem, clear} from '../../utils/storage';
-import Icon from 'react-native-vector-icons/Feather';
+import {getItem, setItem} from '@/utils/storage';
 
 global.theme = {
   color1: '#297FF8',
@@ -82,7 +81,7 @@ class Init extends React.Component {
         }}>
         <Image
           style={{width: 50, height: 50, marginBottom: 10}}
-          source={require('../../assets/loading.gif')}
+          source={require('@/assets/loading.gif')}
         />
         <Text style={{color: 'white'}}>加载中...</Text>
       </View>

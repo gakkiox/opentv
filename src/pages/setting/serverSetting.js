@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, Image, StyleSheet} from 'react-native';
-import Hint from '../components/hint';
+import Hint from '@/pages/components/hint';
 import {getItem, setItem} from '@/utils/storage';
 import InputCell from './components/inputCell';
 import Btn from '@/pages/components/btn.js';

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Feather';
 class VideoComponent extends React.Component {
@@ -39,11 +34,16 @@ class VideoComponent extends React.Component {
     this.opts = {};
   }
   static defaultProps = {
-    pressRight: () => {},
-    pressUp: () => {},
-    pressLeft: () => {},
-    pressDown: () => {},
-    onEnd: () => {}
+    onEnd: () => {},
+    onProgress: () => {},
+    resizeMode: 'contain',
+    muted: false, //静音
+    bufferConfig: {
+      minBufferMs: 20000,
+      maxBufferMs: 50000,
+      bufferForPlaybackMs: 2500,
+      bufferForPlaybackAfterRebufferMs: 5000,
+    }
   };
 
   _onLoad(ev) {
@@ -63,10 +63,11 @@ class VideoComponent extends React.Component {
     if (!state.seeking) {
       state.progress = ev.currentTime;
     }
+    this.props.onProgress(ev);
     this.setState(state);
   }
   _onError(e) {
-    console.log("Video error", e);
+    console.log('Video error', e);
   }
   _onSeek(params) {
     let state = this.state;
@@ -155,13 +156,23 @@ class VideoComponent extends React.Component {
     let {duration, paused, showControls, progress} = this.state;
     let props = this.props;
     return (
-      <View>
-        <TouchableOpacity ref={e => (this.touchView = e)} activeOpacity={1}>
+      <View
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          top: 0,
+          left: 0,
+        }}>
+        <TouchableOpacity
+          style={{width: '100%', height: '100%'}}
+          ref={e => (this.touchView = e)}
+          activeOpacity={1}>
           <View
             style={[
               styles.fullScreen,
               {
-                opacity: 1,
+                opacity: showControls ? 1 : 0,
                 zIndex: 10,
                 backgroundColor: 'transparent',
               },
@@ -235,10 +246,7 @@ class VideoComponent extends React.Component {
             </View>
           </View>
           <Video
-            style={{
-              width: 192 * 3,
-              height: 108 * 3,
-            }}
+            style={[styles.fullScreen, {zIndex: 1}]}
             ref={e => (this.video = e)}
             onLoad={this.event.onLoad}
             onEnd={props.onEnd}
@@ -251,6 +259,7 @@ class VideoComponent extends React.Component {
             source={props.source}
             paused={paused}
             muted={props.muted}
+            progressUpdateInterval={1000}
           />
         </TouchableOpacity>
       </View>
@@ -268,6 +277,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   fullScreen: {
+    width: '100%',
+    height: '100% ',
     position: 'absolute',
     top: 0,
     left: 0,

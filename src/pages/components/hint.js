@@ -1,6 +1,7 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import * as Animatable from 'react-native-animatable';
 
 class HintComponent extends React.Component {
   constructor(props) {
@@ -8,37 +9,46 @@ class HintComponent extends React.Component {
     this.state = {
       active: false,
       title: '',
-      color: '#52c41a',
+      color: '#000',
     };
   }
+
   show(title = '', type = 'success') {
-    this.setState({
-      active: true,
-      color: type == 'success' ? '#52c41a' : 'red',
-      title,
-    });
-    setTimeout(() => {
+    let t = null;
+    t = setTimeout(() => {
       this.setState({
         active: false,
       });
+      if (this.view != null) {
+        this.view.transitionTo({top: -150});
+      }
+      clearTimeout(t);
     }, 4000);
+    this.setState({
+      active: true,
+      color: type == 'success' ? '#000' : 'red',
+      title,
+    });
+    this.view.transitionTo({top: 0});
   }
   render() {
     return (
-      <View
+      <Animatable.View
+        ref={e => (this.view = e)}
         style={{
           position: 'absolute',
-          top: 0,
+          top: -150,
           right: 0,
           flexDirection: 'row',
-          justifyContent: 'flex-end',
+          justifyContent: 'center',
           alignItems: 'center',
           zIndex: 100,
-          paddingHorizontal: 10,
-          paddingVertical: 5,
-          opacity: this.state.active ? 1 : 0,
+          paddingHorizontal: 20,
+          paddingVertical: 10,
+          backgroundColor: '#fff',
+          opacity: 1,
         }}>
-        <Icon name="alert-circle" size={22} color={this.state.color} />
+        <Icon name="alert-circle" size={24} color={this.state.color} />
         <Text
           style={{
             color: this.state.color,
@@ -47,7 +57,7 @@ class HintComponent extends React.Component {
           }}>
           {this.state.title}
         </Text>
-      </View>
+      </Animatable.View>
     );
   }
 }

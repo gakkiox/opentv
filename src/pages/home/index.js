@@ -7,17 +7,17 @@ import {
   FlatList,
   Text,
 } from 'react-native';
-import Btn from '../components/btn';
+import Btn from '@/pages/components/btn';
 import HeadBtn from './components/headBtn';
 import Item from './components/item';
-import Hint from '../components/hint.js';
+import Hint from '@/pages/components/hint.js';
 import {
   getTeleplayClassify,
   getMovieClassify,
   getTeleplayList,
   getMovieList,
-} from '../../api/index';
-import {getItem} from '../../utils/storage';
+} from '@/api/index';
+import {getItem} from '@/utils/storage';
 
 class Home extends React.Component {
   constructor(props) {
@@ -33,7 +33,7 @@ class Home extends React.Component {
       lastView: false,
       showLastView: false,
     };
-    this.numColumns = Math.floor((global.windowWidth - 100) / 140) ;
+    this.numColumns = Math.floor((global.windowWidth - 100) / 140);
     this.limit = 20;
     this.picPrefix = global.picPrefix;
   }
@@ -173,7 +173,9 @@ class Home extends React.Component {
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text>未看完的</Text>
-            <Text style={{marginLeft: 5, color: '#fff200'}}>{lastView.name}</Text>
+            <Text style={{marginLeft: 5, color: '#fff200'}}>
+              {lastView.name}
+            </Text>
             <Text>第{lastView.idx}集</Text>
           </View>
         </View>
@@ -257,7 +259,7 @@ class Home extends React.Component {
             }}>
             {this.renderNoData()}
             <FlatList
-            //  contentContainerStyle={{justifyContent: "space-between"}}
+              //  contentContainerStyle={{justifyContent: "space-between"}}
               onEndReachedThreshold={1}
               showsVerticalScrollIndicator={false}
               numColumns={this.numColumns}
@@ -270,7 +272,7 @@ class Home extends React.Component {
         <View style={[styles.fullScreen, {zIndex: 1}]}>
           <Image
             style={{width: '100%', height: '100%', opacity: 0.4}}
-            source={require('../../assets/home.jpg')}
+            source={require('@/assets/home.jpg')}
           />
         </View>
       </View>

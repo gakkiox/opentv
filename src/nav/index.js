@@ -8,7 +8,7 @@ import History from '../pages/history/index';
 import serverSetting from '../pages/setting/serverSetting';
 import playTest from '../pages/setting/playTest';
 import otherSetting from '../pages/setting/otherSetting';
-
+import {View, Text} from 'react-native';
 const Stack = createNativeStackNavigator();
 // stack路由配置
 export default function Navigation() {

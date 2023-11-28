@@ -1,8 +1,8 @@
 import React from 'react';
 import {Text, View, Image, StyleSheet, ScrollView} from 'react-native';
-import {getTeleplayDetail, getMovieDetail} from '../../api/index';
-import Hint from '../components/hint.js';
-import Btn from '../components/btn';
+import {getTeleplayDetail, getMovieDetail} from '@/api/index';
+import Hint from '@/pages/components/hint.js';
+import Btn from '@/pages/components/btn';
 
 class Detail extends React.Component {
   constructor(props) {
@@ -148,7 +148,7 @@ class Detail extends React.Component {
         <View style={[styles.fullScreen, {zIndex: 1}]}>
           <Image
             style={{width: '100%', height: '100%', opacity: 0.7}}
-            source={require('../../assets/detail.jpg')}
+            source={require('@/assets/detail.jpg')}
           />
         </View>
       </View>

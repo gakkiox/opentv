@@ -74,7 +74,7 @@ class PlayTest extends React.Component {
         <View style={[styles.fullScreen, {zIndex: 1}]}>
           <Image
             style={{width: '100%', height: '100%', opacity: 0.4}}
-            source={require('../../assets/setting.jpg')}
+            source={require('@/assets/setting.jpg')}
           />
         </View>
       </View>
