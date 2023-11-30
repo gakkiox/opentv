@@ -1,8 +1,7 @@
 // import {getItem, setItem} from '../utils/storage.js';
-
-console.log('apis: ');
+const baseurl = global.baseurl;
+console.log('apis: ', baseurl);
 function get(url) {
-  let baseurl = global.baseurl;
   return new Promise((resolve, reject) => {
     fetch(baseurl + url, {
       method: 'get',
@@ -14,7 +13,6 @@ function get(url) {
   });
 }
 function post(url, data = {}) {
-  let baseurl = global.baseurl;
   return new Promise((resolve, reject) => {
     // let baseurl = global.defaulturl;
     // let dat = await getItem('baseurl');

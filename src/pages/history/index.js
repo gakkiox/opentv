@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {getItem} from '../../utils/storage';
+import Hint from '@/pages/components/hint.js';
+
 class History extends React.Component {
   constructor(props) {
     super(props);
@@ -21,7 +23,6 @@ class History extends React.Component {
     let state = this.state;
     let historyRet = await getItem('history');
     state.history = historyRet.value;
-    console.log(state.history);
     this.setState(state);
   }
   renderNone() {
@@ -70,9 +71,11 @@ class History extends React.Component {
                 zIndex: 10,
                 borderRadius: 5,
                 paddingHorizontal: 4,
-                paddingVertical: 2
+                paddingVertical: 2,
               }}>
-              <Text style={{fontSize: 14,  color: "white"}}>{item.source_type == 'teleplay' ? '电视剧' : '电影'}</Text>
+              <Text style={{fontSize: 14, color: 'white'}}>
+                {item.source_type == 'teleplay' ? '电视剧' : '电影'}
+              </Text>
             </View>
             <Image
               style={{
@@ -111,6 +114,7 @@ class History extends React.Component {
           position: 'relative',
           backgroundColor: 'black',
         }}>
+        <Hint ref={e => (this.hint = e)} />
         <View
           style={{
             height: '100%',

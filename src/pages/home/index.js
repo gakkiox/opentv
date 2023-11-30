@@ -10,7 +10,6 @@ import {
 import Btn from '@/pages/components/btn';
 import HeadBtn from './components/headBtn';
 import Item from './components/item';
-import Hint from '@/pages/components/hint.js';
 import {
   getTeleplayClassify,
   getMovieClassify,
@@ -18,6 +17,7 @@ import {
   getMovieList,
 } from '@/api/index';
 import {getItem} from '@/utils/storage';
+import Hint from '@/pages/components/hint.js';
 
 class Home extends React.Component {
   constructor(props) {
@@ -102,6 +102,10 @@ class Home extends React.Component {
       let ret1 = await getTeleplayClassify();
       let ret2 = await getMovieClassify();
       let ret3 = await getTeleplayList({limit: this.limit, offset: 1});
+      if (ret1.code != 200) {
+        this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
+        return;
+      }
       let lastViewRet = await getItem('lastView');
       state.showLastView = global.showLastView;
       state.lastView = lastViewRet.value;
@@ -114,10 +118,11 @@ class Home extends React.Component {
       state.movie_class = ret2.data;
       state.classify_list = ret2.data;
       this.hint.show('获取数据成功');
+
       this.setState(state);
     } catch (e) {
       let msg = `获取数据失败`;
-      // this.hint.show(msg, "red");
+      this.hint.show(msg, 'red');
       console.log(msg, e);
     }
   }

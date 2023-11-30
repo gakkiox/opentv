@@ -1,8 +1,8 @@
 import React from 'react';
 import {Text, View, Image, StyleSheet, ScrollView} from 'react-native';
 import {getTeleplayDetail, getMovieDetail} from '@/api/index';
-import Hint from '@/pages/components/hint.js';
 import Btn from '@/pages/components/btn';
+import Hint from '@/pages/components/hint.js';
 
 class Detail extends React.Component {
   constructor(props) {
@@ -18,9 +18,17 @@ class Detail extends React.Component {
       let {source_type, id} = this.props.route.params;
       if (source_type == 'teleplay') {
         let ret = await getTeleplayDetail({id});
+        if (ret.code != 200) {
+          this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
+          return;
+        }
         state.film_data = ret.data;
       } else {
         let ret2 = await getMovieDetail({id});
+        if (ret2.code != 200) {
+          this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
+          return;
+        }
         state.film_data = ret2.data;
       }
       this.hint.show('获取数据成功');
@@ -37,7 +45,9 @@ class Detail extends React.Component {
     if (source_type == 'teleplay') {
       return (
         <View>
-          <Text style={{marginBottom: 10, fontSize: 18, color: "#fff"}}>剧集</Text>
+          <Text style={{marginBottom: 10, fontSize: 18, color: '#fff'}}>
+            剧集
+          </Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <View style={{flexDirection: 'row'}}>
               {film_data.teleplay_list.map((item, index) => {
@@ -49,7 +59,7 @@ class Detail extends React.Component {
                       paddingVertical={5}
                       paddingHorizontal={20}
                       marginRight={6}
-                      backgroundColor= "rgba(255,255,255,0.5)"
+                      backgroundColor="rgba(255,255,255,0.5)"
                       onPress={() =>
                         this.props.navigation.navigate('Player', {
                           tv_id: film_data.id,
@@ -82,7 +92,7 @@ class Detail extends React.Component {
           position: 'relative',
           backgroundColor: 'black',
         }}>
-        <Hint ref={e => (this.hint = e)} />
+           <Hint ref={e => (this.hint = e)} />
         <View style={[styles.container]}>
           <View
             style={{
@@ -96,7 +106,7 @@ class Detail extends React.Component {
               borderRadius={20}
               paddingVertical={5}
               paddingHorizontal={20}
-              backgroundColor= "rgba(255,255,255,0.5)"
+              backgroundColor="rgba(255,255,255,0.5)"
               title="返回首页"
               onPress={() => this.props.navigation.goBack()}
             />
@@ -141,7 +151,7 @@ class Detail extends React.Component {
               </Text>
             </View>
           </View>
-          <View style={{width: '100%', paddingHorizontal: 20, }}>
+          <View style={{width: '100%', paddingHorizontal: 20}}>
             {this.renderPlaylist()}
           </View>
         </View>

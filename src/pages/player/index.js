@@ -4,6 +4,8 @@ import Hint from '@/pages/components/hint.js';
 import {getTeleplayPlay} from '@/api/index';
 import {setItem, getItem} from '@/utils/storage.js';
 import Video from '@/pages/components/video.js';
+
+
 class Player extends React.Component {
   constructor(props) {
     super(props);
@@ -77,7 +79,7 @@ class Player extends React.Component {
         return;
       }
       params.idx = state.playDetail.idx + 1;
-      this.showMsg('正在为您加载下一集');
+      this.hint.show('正在为您加载下一集');
     }
     if (type == 'prev') {
       if (state.playDetail.idx == 1) {
@@ -86,7 +88,7 @@ class Player extends React.Component {
         return;
       }
       params.idx = state.playDetail.idx - 1;
-      this.showMsg('正在为您加载上一集');
+      this.hint.show('正在为您加载上一集');
     }
     this.setState(state);
     await this.getTvDetail(params);
@@ -95,6 +97,10 @@ class Player extends React.Component {
     let state = this.state;
     try {
       let ret = await getTeleplayPlay(params);
+      if (ret.code != 200) {
+        this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
+        return;
+      }
       state.playDetail = ret.data.play_detail;
       state.playList = ret.data.play_list;
       state.uri = `${this.tvPrefix}${state.playDetail.word}/${state.playDetail.link}`;
@@ -171,7 +177,7 @@ class Player extends React.Component {
           onProgress={this.onProgress.bind(this)}
         />
       );
-    } 
+    }
   }
   /**
    * https://vjs.zencdn.net/v/oceans.mp4
@@ -179,7 +185,12 @@ class Player extends React.Component {
    * http://dg1sy-vodcdn.migucloud.com/mgc_transfiles/4947/2021/3/27/0f8Cmn55zakUGv45Btz0/83300486/custom_origin_4M/0f8Cmn55zakUGv45Btz0custom_origin_4Mhls.mp4.m3u8
    */
   render() {
-    return <View style={[styles.container]}>{this.renderVideo()}</View>;
+    return (
+      <View style={[styles.container]}>
+        <Hint ref={e => (this.hint = e)} />
+        {this.renderVideo()}
+      </View>
+    );
   }
 }
 const styles = StyleSheet.create({

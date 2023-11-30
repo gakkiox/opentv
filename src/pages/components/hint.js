@@ -11,19 +11,19 @@ class HintComponent extends React.Component {
       title: '',
       color: '#000',
     };
+    this.timer = null;
   }
 
   show(title = '', type = 'success') {
-    let t = null;
-    t = setTimeout(() => {
+    this.timer = setTimeout(() => {
       this.setState({
         active: false,
       });
       if (this.view != null) {
         this.view.transitionTo({top: -150});
       }
-      clearTimeout(t);
-    }, 4000);
+      clearTimeout(this.timer);
+    }, 3000);
     this.setState({
       active: true,
       color: type == 'success' ? '#000' : 'red',
@@ -37,12 +37,12 @@ class HintComponent extends React.Component {
         ref={e => (this.view = e)}
         style={{
           position: 'absolute',
-          top: -150,
+          top:  -150,
           right: 0,
           flexDirection: 'row',
           justifyContent: 'center',
           alignItems: 'center',
-          zIndex: 100,
+          zIndex: 1000,
           paddingHorizontal: 20,
           paddingVertical: 10,
           backgroundColor: '#fff',

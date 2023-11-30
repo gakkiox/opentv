@@ -1,10 +1,11 @@
 import React from 'react';
 import {Text, View, Image, StyleSheet} from 'react-native';
-import Hint from '@/pages/components/hint';
 import {getItem, setItem} from '@/utils/storage';
 import InputCell from './components/inputCell';
 import Btn from '@/pages/components/btn.js';
+import Hint from '@/pages/components/hint.js';
 // import * as Updates from 'expo-updates';
+import RNRestart from 'react-native-restart';
 
 class Setting extends React.Component {
   constructor(props) {
@@ -29,27 +30,18 @@ class Setting extends React.Component {
     }
     let url = `http://${this.state.ip}:${this.state.port}`;
     await setItem('baseurl', url);
-    this.hint.show('修改服务器配置成功~');
-    global.baseurl = url
-    this.props.navigation.reset({
-      index: 0,
-      routes: [{name: 'Init'}],
-    });
+    this.hint.show('服务器配置成功，两秒后将重启应用');
+    setTimeout(() => {
+      RNRestart.restart();
+    }, 2000);
   }
   async restoreDefault() {
     let url = global.defaulturl;
-    this.setState({
-      ip: url.split('//')[1].split(':')[0],
-      port: url.split(':')[1],
-    });
-    global.baseurl = url
     await setItem('baseurl', url);
-    this.hint.show('恢复默认设置成功');
-    this.props.navigation.reset({
-      index: 0,
-      routes: [{name: 'Init'}],
-    });
-
+    this.hint.show('默认设置恢复成功，两秒后将重启应用');
+    setTimeout(() => {
+      RNRestart.restart();
+    }, 2000);
   }
   async componentDidMount() {
     let baseurl = await getItem('baseurl');
