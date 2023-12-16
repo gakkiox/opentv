@@ -35,7 +35,8 @@ class Home extends React.Component {
     };
     this.numColumns = Math.floor((global.windowWidth - 100) / 140);
     this.limit = 20;
-    this.picPrefix = global.picPrefix;
+    this.tvPicPrefix = global.tvPicPrefix;
+    this.moviePicPrefix = global.moviePicPrefix;
   }
 
   async toggleMovie() {
@@ -46,6 +47,7 @@ class Home extends React.Component {
     try {
       let ret = await getMovieList({limit: this.limit, offset: 1});
       state.list = ret.data.rows;
+      console.log(ret.data.rows)
       state.data_total = ret.data.total;
       state.source_type = 'movie';
       state.classify_list = state.movie_class;
@@ -188,10 +190,16 @@ class Home extends React.Component {
     }
   }
   renderItem(item) {
+    let {source_type} = this.state;
     return (
       <View style={{marginBottom: 10}}>
         <Item
-          source={{uri: picPrefix + item.pic}}
+          source={{
+            uri:
+              (source_type == 'teleplay'
+                ? this.tvPicPrefix
+                : this.moviePicPrefix) + item.pic,
+          }}
           onPress={() =>
             this.props.navigation.navigate('Detail', {
               id: item.id,

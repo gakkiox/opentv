@@ -17,7 +17,8 @@ class History extends React.Component {
       history: [],
       focus_idx: false,
     };
-    this.picPrefix = global.picPrefix;
+    this.tvPicPrefix = global.tvPicPrefix;
+    this.moviePicPrefix = global.moviePicPrefix;
   }
   async componentDidMount() {
     let state = this.state;
@@ -84,7 +85,7 @@ class History extends React.Component {
                 height: '100%',
                 borderRadius: 5,
               }}
-              source={{uri: this.picPrefix + item.pic}}
+              source={{uri: this.tvPicPrefix + item.pic}}
             />
           </View>
           <View>

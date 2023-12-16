@@ -1,58 +1,57 @@
 import React from 'react';
 import {Text, View, TVEventHandler, StyleSheet, Image} from 'react-native';
 import Hint from '@/pages/components/hint.js';
-import {getTeleplayPlay} from '@/api/index';
+import {getTeleplayPlay, getMoviePlay} from '@/api/index';
 import {setItem, getItem} from '@/utils/storage.js';
 import Video from '@/pages/components/video.js';
-
 
 class Player extends React.Component {
   constructor(props) {
     super(props);
     this.tvPrefix = global.tvPrefix;
+    this.moviePrefix = global.moviePrefix;
     this.state = {
+      source_type: 'teleplay',
       uri: '',
       playDetail: {},
       playList: [],
       isPlay: false,
+      source_id: null,
     };
   }
 
   updateLastView(currentTime) {
-    let {source_type, tv_id} = this.props.route.params;
     let state = this.state;
     let delay = 1000 * 10;
     let curTime = new Date().getTime();
     let diff = delay - (curTime - this.LastViewTmpTime);
     if (diff <= 0) {
       setItem('lastView', {
-        type: source_type,
-        id: tv_id,
+        type: state.source_type,
+        id: state.source_id,
         name: state.playDetail.name,
-        idx: state.playDetail.idx,
+        idx: state.source_type == 'teleplay' ? state.playDetail.idx : 1,
         play_time: currentTime,
       });
       this.LastViewTmpTime = curTime;
     }
   }
   async updateHistory(currentTime) {
-    let {source_type, tv_id} = this.props.route.params;
     let state = this.state;
     let historyRet = await getItem('history');
     let history = historyRet.value;
     let index = history.findIndex(
-      a => a.source_type == source_type && a.id == tv_id,
+      a => a.source_type == state.source_type && a.id == tv_id,
     );
     let film = {
-        id: tv_id,
-        idx: state.playDetail.idx,
-        source_type,
+        id: state.source_id,
+        idx: state.source_type == 'teleplay' ? state.playDetail.idx : 1,
+        source_type: state.source_type,
         name: state.playDetail.name,
         pic: state.playDetail.pic,
         play_time: currentTime,
       },
       tmp = {};
-    console.log(film);
     if (index == -1) {
       if (history.length > 20) {
         history.pop();
@@ -69,6 +68,9 @@ class Player extends React.Component {
 
   async playNextPrev(type) {
     let state = this.state;
+    if (state.source_type != 'teleplay') {
+      return;
+    }
     let params = {
       tv_id: state.playDetail.tv_id,
     };
@@ -104,6 +106,9 @@ class Player extends React.Component {
       state.playDetail = ret.data.play_detail;
       state.playList = ret.data.play_list;
       state.uri = `${this.tvPrefix}${state.playDetail.word}/${state.playDetail.link}`;
+      // state.uri = `http://192.168.1.220:7005/tv/${state.playDetail.word}/${state.playDetail.link}`;
+
+      console.log(state.uri);
       state.isPlay = true;
       this.setState(state);
       await this.updateHistory(0);
@@ -117,7 +122,22 @@ class Player extends React.Component {
       console.log(msg, e);
     }
   }
-
+  async getMovieDetail(params) {
+    let state = this.state;
+    try {
+      let ret = await getMoviePlay(params);
+      state.playDetail = ret.data;
+      console.log(ret);
+      state.uri = `${this.moviePrefix}${state.playDetail.link}`;
+      state.isPlay = true;
+      this.setState(state);
+      console.log(state.uri);
+    } catch (e) {
+      let msg = `获取电影资源失败`;
+      console.log(e);
+      this.hint.show(msg, 'err');
+    }
+  }
   enableTVEventHandler() {
     this._tvEventHandler = new TVEventHandler();
     this._tvEventHandler.enable(this, function (cmp, evt) {
@@ -144,13 +164,17 @@ class Player extends React.Component {
   }
 
   async componentDidMount() {
-    let {source_type, tv_id, idx} = this.props.route.params;
+    let {source_type, id, idx} = this.props.route.params;
     let state = this.state;
+    state.source_type = source_type;
+    state.source_id = id;
     // this.touchView.focus();
     this.enableTVEventHandler();
     try {
       if (source_type == 'teleplay') {
-        await this.getTvDetail({tv_id, idx});
+        await this.getTvDetail({tv_id: id, idx});
+      } else {
+        await this.getMovieDetail({movie_id: id});
       }
       global.showLastView = false;
     } catch (e) {
@@ -166,6 +190,18 @@ class Player extends React.Component {
     // console.log(ev);
     // let {currentTime} = ev;
   }
+  onEnd() {
+    let that = this;
+    if (this.state.source_type == 'teleplay') {
+      this.playNextPrev('next');
+    } else {
+      this.hint.show('影片播放结束，正在返回首页。。。');
+      let t = setTimeout(() => {
+        clearTimeout(t);
+        that.props.navigation.navigate('Home');
+      }, 1000 * 4);
+    }
+  }
   renderVideo() {
     let {uri, playDetail, isPlay} = this.state;
     if (isPlay) {
@@ -174,6 +210,7 @@ class Player extends React.Component {
           name={playDetail.play_name}
           ref={e => (this.player = e)}
           source={{uri}}
+          onEnd={this.onEnd.bind(this)}
           onProgress={this.onProgress.bind(this)}
         />
       );

@@ -9,13 +9,16 @@ class Detail extends React.Component {
     super(props);
     this.state = {
       film_data: {teleplay_list: []},
+      source_type: 'teleplay',
     };
-    this.picPrefix = global.picPrefix;
+    this.tvPicPrefix = global.tvPicPrefix;
+    this.moviePicPrefix = global.moviePicPrefix;
   }
   async componentDidMount() {
     try {
       let state = this.state;
       let {source_type, id} = this.props.route.params;
+      state.source_type = source_type;
       if (source_type == 'teleplay') {
         let ret = await getTeleplayDetail({id});
         if (ret.code != 200) {
@@ -40,8 +43,7 @@ class Detail extends React.Component {
     }
   }
   renderPlaylist() {
-    let {source_type} = this.props.route.params;
-    let {film_data} = this.state;
+    let {film_data, source_type} = this.state;
     if (source_type == 'teleplay') {
       return (
         <View>
@@ -62,7 +64,7 @@ class Detail extends React.Component {
                       backgroundColor="rgba(255,255,255,0.5)"
                       onPress={() =>
                         this.props.navigation.navigate('Player', {
-                          tv_id: film_data.id,
+                          id: film_data.id,
                           idx: item.idx,
                           source_type,
                         })
@@ -78,12 +80,26 @@ class Detail extends React.Component {
     }
     return (
       <View style={{width: '100%', alignItems: 'flex-start'}}>
-        <Btn title="立即播放" />
+        <Btn
+          borderRadius={20}
+          paddingVertical={5}
+          paddingHorizontal={20}
+          marginRight={6}
+          backgroundColor="rgba(255,255,255,0.5)"
+          title="立即播放"
+          onPress={() =>
+            this.props.navigation.navigate('Player', {
+              id: film_data.id,
+              source_type,
+              idx: 0
+            })
+          }
+        />
       </View>
     );
   }
   render() {
-    let {film_data} = this.state;
+    let {film_data, source_type} = this.state;
     return (
       <View
         style={{
@@ -92,7 +108,7 @@ class Detail extends React.Component {
           position: 'relative',
           backgroundColor: 'black',
         }}>
-           <Hint ref={e => (this.hint = e)} />
+        <Hint ref={e => (this.hint = e)} />
         <View style={[styles.container]}>
           <View
             style={{
@@ -122,7 +138,12 @@ class Detail extends React.Component {
             <View style={{marginRight: 10}}>
               <Image
                 style={{width: 180, height: 250, borderRadius: 5}}
-                source={{uri: this.picPrefix + film_data.pic}}
+                source={{
+                  uri:
+                    (source_type == 'teleplay'
+                      ? this.tvPicPrefix
+                      : this.moviePicPrefix) + film_data.pic,
+                }}
               />
             </View>
             <View

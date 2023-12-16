@@ -2,6 +2,9 @@ import React from 'react';
 import {View, ScrollView, Image, StyleSheet, Text} from 'react-native';
 import Cell from './components/cell.js';
 import Icon from 'react-native-vector-icons/Feather';
+import {clear} from '@/utils/storage';
+import Hint from '@/pages/components/hint.js';
+
 class Setting extends React.Component {
   constructor(props) {
     super(props);
@@ -22,7 +25,7 @@ class Setting extends React.Component {
         text: '测试视频播放',
       },
       restoreDefault: {
-        name: "sunset",
+        name: 'sunset',
         text: '恢复默认',
       },
       otherSetting: {
@@ -36,7 +39,10 @@ class Setting extends React.Component {
       cellKey: key,
     });
   }
-
+  async restoreDefault() {
+    await clear();
+    this.hint.show('恢复设置成功！');
+  }
   render() {
     let {cellKey} = this.state;
     return (
@@ -47,6 +53,7 @@ class Setting extends React.Component {
           position: 'relative',
           backgroundColor: 'black',
         }}>
+        <Hint ref={e => (this.hint = e)} />
         <View
           style={{
             height: '100%',
@@ -80,9 +87,7 @@ class Setting extends React.Component {
                 <Cell
                   title="所有设置恢复默认"
                   focusCell={() => this.focusCellHandle('restoreDefault')}
-                  pressCell={() => {
-                    this.props.navigation.navigate('playTest');
-                  }}
+                  pressCell={this.restoreDefault.bind(this)}
                 />
                 <Cell
                   title="其他设置"

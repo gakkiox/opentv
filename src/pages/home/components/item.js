@@ -63,7 +63,6 @@ class ItemComponent extends React.Component {
                   width: '100%',
                   height: '100%',
                   borderRadius: 4,
-
                   transform: [{scale: is_focus ? 1.3 : 1}],
                 }}
                 source={this.props.source}

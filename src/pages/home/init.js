@@ -19,7 +19,7 @@ class Init extends React.Component {
     if (process.env.NODE_ENV == 'development') {
       url = 'http://192.168.1.220:8440';
     }
-
+    let publicUrl = 'http://192.168.1.220:7005';
     global.defaulturl = url;
     let urlRet = await getItem('baseurl');
     if (urlRet.value != null) {
@@ -28,9 +28,10 @@ class Init extends React.Component {
       global.baseurl = url;
       await setItem('baseurl', url);
     }
-
-    global.picPrefix = `${global.baseurl}/public/tv_img/`;
-    global.tvPrefix = `${global.baseurl}/public/tv/`;
+    global.tvPicPrefix = `${publicUrl}/tv_img/`;
+    global.tvPrefix = `${publicUrl}/tv/`;
+    global.moviePicPrefix = `${publicUrl}/movie_img/`;
+    global.moviePrefix = `${publicUrl}/movie/`;
   }
   async initLastView() {
     let lastView = {

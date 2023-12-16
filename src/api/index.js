@@ -1,7 +1,7 @@
 // import {getItem, setItem} from '../utils/storage.js';
-const baseurl = global.baseurl;
-console.log('apis: ', baseurl);
+
 function get(url) {
+  const baseurl = global.baseurl;
   return new Promise((resolve, reject) => {
     fetch(baseurl + url, {
       method: 'get',
@@ -13,6 +13,7 @@ function get(url) {
   });
 }
 function post(url, data = {}) {
+  const baseurl = global.baseurl;
   return new Promise((resolve, reject) => {
     // let baseurl = global.defaulturl;
     // let dat = await getItem('baseurl');
@@ -58,4 +59,7 @@ export function getTeleplayDetail(data) {
 }
 export function getTeleplayPlay(data) {
   return post('/v1/app/tv/play', data);
+}
+export function getMoviePlay(data) {
+  return post('/v1/app/movie/play', data);
 }
