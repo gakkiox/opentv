@@ -16,7 +16,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'itv' do
+target 'opentv' do
   config = use_native_modules!
   platform :ios, min_ios_version_supported
 
@@ -32,14 +32,14 @@ target 'itv' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'itvTests' do
+  target 'opentvTests' do
     inherit! :complete
     # Pods for testing
   end
 
 end
 
-target 'itv-tvOS' do
+target 'opentv-tvOS' do
   config = use_native_modules!
   platform :tvos, min_ios_version_supported
 
@@ -55,7 +55,7 @@ target 'itv-tvOS' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'itv-tvOSTests' do
+  target 'opentv-tvOSTests' do
     inherit! :complete
     # Pods for testing
   end

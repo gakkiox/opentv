@@ -1,9 +1,13 @@
 {
-  "name": "itv",
-  "version": "0.0.1",
+  "name": "opentv",
+  "version": "1.0.0",
   "private": true,
+  "description": "一个自主部署的电视应用程序",
+  "license": "MIT",
+  "author": "gakkiox",
   "scripts": {
     "dev": "expo run:android",
+    "build": "cd ./android && gradlew assembleRelease",
     "ios": "expo run:ios",
     "tvos": "expo run:ios --scheme itv-tvOS --device \"Apple TV\"",
     "lint": "eslint .",
