@@ -1,5 +1,12 @@
 import React from 'react';
-import {View, ScrollView, Image, StyleSheet, Text, TVEventHandler} from 'react-native';
+import {
+  View,
+  ScrollView,
+  Image,
+  StyleSheet,
+  Text,
+  TVEventHandler,
+} from 'react-native';
 import Video from '@/pages/components/video.js';
 class PlayTest extends React.Component {
   constructor(props) {
@@ -11,13 +18,13 @@ class PlayTest extends React.Component {
     this._tvEventHandler.enable(this, function (cmp, evt) {
       console.log(evt);
       if (evt && evt.eventType === 'right') {
-        cmp.player.playFastBack("fast")
+        cmp.player.playFastBack('fast');
       } else if (evt && evt.eventType === 'up') {
-        console.log("prev")
+        console.log('prev');
       } else if (evt && evt.eventType === 'left') {
-        cmp.player.playFastBack("back")
+        cmp.player.playFastBack('back');
       } else if (evt && evt.eventType === 'down') {
-        console.log("next")
+        console.log('next');
       } else if (evt && evt.eventType === 'select') {
         cmp.player.togglePlayPause();
       }

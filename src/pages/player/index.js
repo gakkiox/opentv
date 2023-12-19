@@ -41,7 +41,7 @@ class Player extends React.Component {
     let historyRet = await getItem('history');
     let history = historyRet.value;
     let index = history.findIndex(
-      a => a.source_type == state.source_type && a.id == tv_id,
+      a => a.source_type == state.source_type && a.id == state.source_id,
     );
     let film = {
         id: state.source_id,
@@ -52,6 +52,7 @@ class Player extends React.Component {
         play_time: currentTime,
       },
       tmp = {};
+    console.log('updateHistory', film);
     if (index == -1) {
       if (history.length > 20) {
         history.pop();
@@ -107,8 +108,6 @@ class Player extends React.Component {
       state.playList = ret.data.play_list;
       state.uri = `${this.tvPrefix}${state.playDetail.word}/${state.playDetail.link}`;
       // state.uri = `http://192.168.1.220:7005/tv/${state.playDetail.word}/${state.playDetail.link}`;
-
-      console.log(state.uri);
       state.isPlay = true;
       this.setState(state);
       await this.updateHistory(0);
@@ -127,11 +126,11 @@ class Player extends React.Component {
     try {
       let ret = await getMoviePlay(params);
       state.playDetail = ret.data;
-      console.log(ret);
       state.uri = `${this.moviePrefix}${state.playDetail.link}`;
       state.isPlay = true;
       this.setState(state);
-      console.log(state.uri);
+      await this.updateHistory(0);
+      this.updateLastView(0);
     } catch (e) {
       let msg = `获取电影资源失败`;
       console.log(e);

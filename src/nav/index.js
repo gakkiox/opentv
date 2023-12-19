@@ -5,6 +5,7 @@ import Player from '../pages/player/index';
 import Detail from '../pages/detail/index';
 import Setting from '../pages/setting/index';
 import History from '../pages/history/index';
+import Iptv from '../pages/iptv/index';
 import serverSetting from '../pages/setting/serverSetting';
 import playTest from '../pages/setting/playTest';
 import otherSetting from '../pages/setting/otherSetting';
@@ -22,6 +23,7 @@ export default function Navigation() {
       <Stack.Screen name="Player" component={Player} />
       <Stack.Screen name="Setting" component={Setting} />
       <Stack.Screen name="History" component={History} />
+      <Stack.Screen name="Iptv" component={Iptv} />
       <Stack.Screen name="serverSetting" component={serverSetting} />
       <Stack.Screen name="playTest" component={playTest} />
       <Stack.Screen name="otherSetting" component={otherSetting} />

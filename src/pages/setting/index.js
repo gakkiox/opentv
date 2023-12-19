@@ -1,9 +1,17 @@
 import React from 'react';
-import {View, ScrollView, Image, StyleSheet, Text} from 'react-native';
+import {
+  View,
+  ScrollView,
+  Image,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+} from 'react-native';
 import Cell from './components/cell.js';
 import Icon from 'react-native-vector-icons/Feather';
 import {clear} from '@/utils/storage';
 import Hint from '@/pages/components/hint.js';
+import CodePush from 'react-native-code-push';
 
 class Setting extends React.Component {
   constructor(props) {
@@ -25,8 +33,12 @@ class Setting extends React.Component {
         text: '测试视频播放',
       },
       restoreDefault: {
-        name: 'sunset',
+        name: 'framer',
         text: '恢复默认',
+      },
+      checkUpdate: {
+        name: 'sunset',
+        text: '检查更新',
       },
       otherSetting: {
         name: 'sliders',
@@ -42,6 +54,58 @@ class Setting extends React.Component {
   async restoreDefault() {
     await clear();
     this.hint.show('恢复设置成功！');
+  }
+  checkAppUpdate() {
+    CodePush.notifyAppReady();
+    CodePush.sync(
+      {
+        installMode: CodePush.InstallMode.IMMEDIATE,
+      },
+      status => {
+        // codePush.SyncStatus.AWAITING_USER_ACTION 1 ： 有更新可用，并向最终用户显示确认对话框。（仅在updateDialog使用时适用）
+        // odePush.SyncStatus.DOWNLOADING_PACKAGE 2 ： 在从 CodePush 服务器下载可用更新。
+        // codePush.SyncStatus.INSTALLING_UPDATE 3 ： 已下载可用更新并将安装
+        // codePush.SyncStatus.UP_TO_DATE 4 ：应用程序已完全更新到配置的部署
+        // codePush.SyncStatus.UPDATE_IGNORED 5 ： 应用程序有一个可选更新，最终用户选择忽略该更新。（仅在updateDialog使用时适用）
+        // codePush.SyncStatus.UPDATE_INSTALLED 6 ： 已安装可用更新，并将在syncStatusChangedCallback函数返回后立即运行或在下次应用程序恢复/重新启动时运
+        // codePush.SyncStatus.SYNC_IN_PROGRESS 7: 正在进行的sync操作阻止当前调用的执行。
+        // codePush.SyncStatus.UNKNOWN_ERROR -1 ： 同步操作发现未知错误。
+        switch (status) {
+          case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+            ToastAndroid.show(
+              '正在从 CodePush 服务器下载可用更新',
+              ToastAndroid.SHORT,
+            );
+            break;
+          case CodePush.SyncStatus.INSTALLING_UPDATE:
+            ToastAndroid.show(
+              '有更新可用，已下载可用更新并将安装',
+              ToastAndroid.SHORT,
+            );
+            break;
+          case CodePush.SyncStatus.UP_TO_DATE:
+            ToastAndroid.show('当前已经是最新版本', ToastAndroid.SHORT);
+            break;
+          case CodePush.SyncStatus.UPDATE_INSTALLED:
+            ToastAndroid.show('最新版本已安装', ToastAndroid.SHORT);
+            break;
+
+          default:
+            break;
+        }
+
+        console.log(status);
+      },
+      // ({receivedBytes, totalBytes}) => {
+      //   // 计算出下载百分比
+      //   const percent = Math.floor((receivedBytes / totalBytes) * 100);
+      // },
+    ).catch(error => {
+      console.log(JSON.stringify(error));
+    });
+  }
+  clearAppUpdate() {
+    CodePush.clearUpdates();
   }
   render() {
     let {cellKey} = this.state;
@@ -88,6 +152,11 @@ class Setting extends React.Component {
                   title="所有设置恢复默认"
                   focusCell={() => this.focusCellHandle('restoreDefault')}
                   pressCell={this.restoreDefault.bind(this)}
+                />
+                <Cell
+                  title="检查更新"
+                  focusCell={() => this.focusCellHandle('checkUpdate')}
+                  pressCell={this.checkAppUpdate.bind(this)}
                 />
                 <Cell
                   title="其他设置"

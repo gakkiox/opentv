@@ -79,7 +79,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     signingConfigs {
         // debug {
@@ -95,11 +95,13 @@ android {
                 keyAlias MYAPP_RELEASE_KEY_ALIAS
                 keyPassword MYAPP_RELEASE_KEY_PASSWORD
             }
+
         }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            resValue "string", "CodePushDeploymentKey", '"V-geb4cf5B3kedGMh5h20m3kb1Re_YfmCy_uL"'
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -108,6 +110,7 @@ android {
             // signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            resValue "string", "CodePushDeploymentKey", '"K1uCH_Wj4QgvhgcDEIvdCO5i92xLtPw6TAoz0"'
         }
     }
 }
@@ -140,3 +143,9 @@ dependencies {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+
+
+
+//  Staging  V-geb4cf5B3kedGMh5h20m3kb1Re_YfmCy_uL
+//  Production K1uCH_Wj4QgvhgcDEIvdCO5i92xLtPw6TAoz0

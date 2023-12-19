@@ -85,7 +85,12 @@ class History extends React.Component {
                 height: '100%',
                 borderRadius: 5,
               }}
-              source={{uri: this.tvPicPrefix + item.pic}}
+              source={{
+                uri:
+                  (item.source_type == 'teleplay'
+                    ? this.tvPicPrefix
+                    : this.moviePicPrefix) + item.pic,
+              }}
             />
           </View>
           <View>

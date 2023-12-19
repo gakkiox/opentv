@@ -81,12 +81,13 @@ class Detail extends React.Component {
     return (
       <View style={{width: '100%', alignItems: 'flex-start'}}>
         <Btn
-          borderRadius={20}
-          paddingVertical={5}
-          paddingHorizontal={20}
+          borderRadius={3}
+          paddingVertical={10}
+          paddingHorizontal={25}
           marginRight={6}
           backgroundColor="rgba(255,255,255,0.5)"
           title="立即播放"
+          color="red"
           onPress={() =>
             this.props.navigation.navigate('Player', {
               id: film_data.id,

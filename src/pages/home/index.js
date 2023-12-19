@@ -47,7 +47,6 @@ class Home extends React.Component {
     try {
       let ret = await getMovieList({limit: this.limit, offset: 1});
       state.list = ret.data.rows;
-      console.log(ret.data.rows)
       state.data_total = ret.data.total;
       state.source_type = 'movie';
       state.classify_list = state.movie_class;
@@ -245,6 +244,13 @@ class Home extends React.Component {
               <HeadBtn
                 title="电影"
                 onPress={this.toggleMovie.bind(this)}></HeadBtn>
+            </View>
+            <View>
+            <HeadBtn
+                title="IPTV"
+                onPress={() =>
+                  this.props.navigation.navigate('Iptv')
+                } />
             </View>
             <View>
               <HeadBtn

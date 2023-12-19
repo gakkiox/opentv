@@ -43,7 +43,7 @@ class VideoComponent extends React.Component {
       maxBufferMs: 50000,
       bufferForPlaybackMs: 2500,
       bufferForPlaybackAfterRebufferMs: 5000,
-    }
+    },
   };
 
   _onLoad(ev) {
@@ -262,6 +262,16 @@ class VideoComponent extends React.Component {
             progressUpdateInterval={1000}
           />
         </TouchableOpacity>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            height: 2,
+            opacity: showControls ? 0 : 1,
+            width: `${((progress / duration) * 100).toFixed(2)}%`,
+            backgroundColor: 'red',
+          }}></View>
       </View>
     );
   }

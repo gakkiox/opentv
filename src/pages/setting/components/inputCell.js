@@ -30,7 +30,7 @@ class InputCell extends React.Component {
               this.setState({is_focus: true});
             }}>
             <TextInput
-            selectionColor="white"
+              selectionColor="white"
               onBlur={() => {
                 this.setState({is_focus: false});
               }}
