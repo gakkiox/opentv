@@ -33,21 +33,6 @@ class Init extends React.Component {
     global.moviePicPrefix = `${publicUrl}/movie_img/`;
     global.moviePrefix = `${publicUrl}/movie/`;
   }
-  async initLastView() {
-    let lastView = {
-      type: 'tv',
-      id: null,
-      idx: null,
-      playTime: null,
-      name: null,
-    };
-    let ret = await getItem('lastView');
-    global.showLastView = true;
-    if (ret.value == null) {
-      await setItem('lastView', lastView);
-      global.showLastView = false;
-    }
-  }
   async initHistory() {
     let history = [];
     let ret = await getItem('history');
@@ -57,7 +42,6 @@ class Init extends React.Component {
   }
   async init() {
     await this.initBaseUrl();
-    await this.initLastView();
     await this.initHistory();
     let t = setTimeout(() => {
       clearTimeout(t);

@@ -36,7 +36,9 @@ class VideoComponent extends React.Component {
   static defaultProps = {
     onEnd: () => {},
     onProgress: () => {},
+    onLoad: () => {},
     resizeMode: 'contain',
+    playTime: 0,
     muted: false, //静音
     bufferConfig: {
       minBufferMs: 20000,
@@ -52,6 +54,8 @@ class VideoComponent extends React.Component {
     state.paused = false;
     state.progress = 0;
     state.hintText = '';
+    state.currentTime = this.props.play_time;
+    this.video.seek(this.props.play_time)
     if (state.showControls) {
       this.resetControlTimeout();
     }

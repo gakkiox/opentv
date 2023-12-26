@@ -61,12 +61,15 @@ class Detail extends React.Component {
                       paddingVertical={5}
                       paddingHorizontal={20}
                       marginRight={6}
-                      backgroundColor="rgba(255,255,255,0.5)"
+                      backgroundColor="rgba(255,255,255,0.6)"
+                      color="#297FF8"
+                      activeColor="red"
                       onPress={() =>
                         this.props.navigation.navigate('Player', {
                           id: film_data.id,
                           idx: item.idx,
                           source_type,
+                          play_time: 0
                         })
                       }
                     />
@@ -85,14 +88,18 @@ class Detail extends React.Component {
           paddingVertical={10}
           paddingHorizontal={25}
           marginRight={6}
-          backgroundColor="rgba(255,255,255,0.5)"
           title="立即播放"
-          color="red"
+          backgroundColor="rgba(255,255,255,0.6)"
+          color="#297FF8"
+          activeColor="red"
+          icon="play"
+          iconSize={24}
           onPress={() =>
             this.props.navigation.navigate('Player', {
               id: film_data.id,
               source_type,
-              idx: 0
+              idx: 0,
+              play_time: 0
             })
           }
         />
@@ -123,8 +130,10 @@ class Detail extends React.Component {
               borderRadius={20}
               paddingVertical={5}
               paddingHorizontal={20}
-              backgroundColor="rgba(255,255,255,0.5)"
+              backgroundColor="rgba(255,255,255,0.6)"
               title="返回首页"
+              color="#297FF8"
+              activeColor="red"
               onPress={() => this.props.navigation.goBack()}
             />
           </View>

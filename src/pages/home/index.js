@@ -98,7 +98,6 @@ class Home extends React.Component {
   }
   async componentDidMount() {
     let state = this;
-
     try {
       let ret1 = await getTeleplayClassify();
       let ret2 = await getMovieClassify();
@@ -107,11 +106,12 @@ class Home extends React.Component {
         this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
         return;
       }
-      let lastViewRet = await getItem('lastView');
-      state.showLastView = global.showLastView;
-      state.lastView = lastViewRet.value;
-      if (lastViewRet.value.id == null) {
-        state.showLastView = false;
+      let historyRet = await getItem('history');
+      console.log(historyRet);
+      if (historyRet.value != null && historyRet.value.length > 0) {
+        state.lastView = historyRet.value[0];
+        console.log(state.lastView);
+        state.showLastView = true;
       }
       state.list = ret3.data.rows;
       state.data_total = ret3.data.total;
@@ -119,7 +119,6 @@ class Home extends React.Component {
       state.movie_class = ret2.data;
       state.classify_list = ret2.data;
       this.hint.show('获取数据成功');
-
       this.setState(state);
     } catch (e) {
       let msg = `获取数据失败`;
@@ -152,13 +151,18 @@ class Home extends React.Component {
     let that = this;
     let {showLastView, lastView} = that.state;
     function gotoPlayer() {
-      that.props.navigation.navigate('Player', {
-        tv_id: lastView.id,
-        idx: lastView.idx,
-        source_type: lastView.type,
-      });
       that.setState({showLastView: false});
+      that.props.navigation.navigate('Player', {
+        id: lastView.id,
+        idx: lastView.idx,
+        source_type: lastView.source_type,
+        play_time: lastView.play_time,
+      });
     }
+    let text =
+      lastView.source_type == 'teleplay'
+        ? `电视剧${lastView.name}第${lastView.idx}集`
+        : `电影${lastView.name}`;
     if (showLastView) {
       return (
         <View
@@ -178,11 +182,7 @@ class Home extends React.Component {
               onPress={gotoPlayer}></Btn>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text>未看完的</Text>
-            <Text style={{marginLeft: 5, color: '#fff200'}}>
-              {lastView.name}
-            </Text>
-            <Text>第{lastView.idx}集</Text>
+            <Text style={{color: '#fed854'}}>{text}</Text>
           </View>
         </View>
       );
@@ -235,7 +235,7 @@ class Home extends React.Component {
         <Hint ref={e => (this.hint = e)} />
         <View style={[styles.container]}>
           <View style={[styles.head]}>
-            <View>
+            <View style={{marginLeft: 15}}>
               <HeadBtn
                 title="电视剧"
                 onPress={this.toggleTv.bind(this)}></HeadBtn>
@@ -246,11 +246,10 @@ class Home extends React.Component {
                 onPress={this.toggleMovie.bind(this)}></HeadBtn>
             </View>
             <View>
-            <HeadBtn
+              <HeadBtn
                 title="IPTV"
-                onPress={() =>
-                  this.props.navigation.navigate('Iptv')
-                } />
+                onPress={() => this.props.navigation.navigate('Iptv')}
+              />
             </View>
             <View>
               <HeadBtn

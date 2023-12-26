@@ -101,7 +101,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            resValue "string", "CodePushDeploymentKey", '"V-geb4cf5B3kedGMh5h20m3kb1Re_YfmCy_uL"'
+            resValue "string", "CodePushDeploymentKey", '"lq7gISNJWGYNAqnmLUHbq0mcTqM6hjhgHWUiE"'
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -110,7 +110,7 @@ android {
             // signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            resValue "string", "CodePushDeploymentKey", '"K1uCH_Wj4QgvhgcDEIvdCO5i92xLtPw6TAoz0"'
+            resValue "string", "CodePushDeploymentKey", '"6qaAyTvbuKwlfBjRopL9IKBBvM8zowjMjgOF-"'
         }
     }
 }
@@ -147,5 +147,5 @@ apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 
 
-//  Staging  V-geb4cf5B3kedGMh5h20m3kb1Re_YfmCy_uL
-//  Production K1uCH_Wj4QgvhgcDEIvdCO5i92xLtPw6TAoz0
+//  Staging  lq7gISNJWGYNAqnmLUHbq0mcTqM6hjhgHWUiE
+//  Production  6qaAyTvbuKwlfBjRopL9IKBBvM8zowjMjgOF-

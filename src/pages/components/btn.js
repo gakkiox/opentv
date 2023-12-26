@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text, View, TouchableNativeFeedback} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
 class BtnComponent extends React.Component {
   constructor(props) {
@@ -10,18 +11,32 @@ class BtnComponent extends React.Component {
   }
   static defaultProps = {
     borderRadius: 0,
-    borderColor: "transparent",
+    borderColor: 'transparent',
     borderWidth: 1,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    paddingVertical: "auto",
-    paddingHorizontal: "auto",
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingVertical: 'auto',
+    paddingHorizontal: 'auto',
     fontSize: 16,
-    color: "white",
-    marginRight: "auto"
+    color: 'white',
+    marginRight: 'auto',
+    activeColor: '#297FF8',
+    icon: false,
+    iconSize: 16,
   };
   render() {
     let {is_focus} = this.state,
       props = this.props;
+    function renderIcon() {
+      if (!props.icon) return;
+      return (
+        <Icon
+          name={props.icon}
+          size={props.iconSize}
+          color={is_focus ? props.activeColor : props.color}
+          style={{marginRight: 8}}
+        />
+      );
+    }
     return (
       <View
         style={{
@@ -30,7 +45,7 @@ class BtnComponent extends React.Component {
           borderWidth: props.borderWidth,
           borderColor: props.borderColor,
           backgroundColor: is_focus ? 'white' : props.backgroundColor,
-          marginRight: props.marginRight
+          marginRight: props.marginRight,
         }}>
         <TouchableNativeFeedback
           onFocus={() => {
@@ -50,9 +65,10 @@ class BtnComponent extends React.Component {
               justifyContent: 'center',
               position: 'relative',
             }}>
+            {renderIcon()}
             <Text
               style={{
-                color: is_focus ? global.theme.color1 : props.color,
+                color: is_focus ? props.activeColor : props.color,
                 fontSize: props.fontSize,
                 marginRight: 4,
               }}>

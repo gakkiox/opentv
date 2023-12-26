@@ -17,52 +17,35 @@ class Player extends React.Component {
       playList: [],
       isPlay: false,
       source_id: null,
+      play_time: 0,
     };
   }
 
-  updateLastView(currentTime) {
-    let state = this.state;
-    let delay = 1000 * 10;
-    let curTime = new Date().getTime();
-    let diff = delay - (curTime - this.LastViewTmpTime);
-    if (diff <= 0) {
-      setItem('lastView', {
-        type: state.source_type,
-        id: state.source_id,
-        name: state.playDetail.name,
-        idx: state.source_type == 'teleplay' ? state.playDetail.idx : 1,
-        play_time: currentTime,
-      });
-      this.LastViewTmpTime = curTime;
-    }
-  }
-  async updateHistory(currentTime) {
+  async updateHistory(currentTime, total_time) {
     let state = this.state;
     let historyRet = await getItem('history');
-    let history = historyRet.value;
+    let history = historyRet.value == null ? [] : historyRet.value;
     let index = history.findIndex(
       a => a.source_type == state.source_type && a.id == state.source_id,
     );
     let film = {
-        id: state.source_id,
-        idx: state.source_type == 'teleplay' ? state.playDetail.idx : 1,
-        source_type: state.source_type,
-        name: state.playDetail.name,
-        pic: state.playDetail.pic,
-        play_time: currentTime,
-      },
-      tmp = {};
-    console.log('updateHistory', film);
+      id: state.source_id,
+      idx: state.source_type == 'teleplay' ? state.playDetail.idx : 1,
+      source_type: state.source_type,
+      name: state.playDetail.name,
+      pic: state.playDetail.pic,
+      play_time: currentTime,
+      total_time: total_time,
+    };
+    console.log(film);
     if (index == -1) {
       if (history.length > 20) {
         history.pop();
       }
       history.unshift(film);
     } else {
-      tmp = history[index];
-      tmp.idx = state.playDetail.idx;
       history.splice(index, 1);
-      history.unshift(tmp);
+      history.unshift(film);
     }
     await setItem('history', history);
   }
@@ -110,8 +93,7 @@ class Player extends React.Component {
       // state.uri = `http://192.168.1.220:7005/tv/${state.playDetail.word}/${state.playDetail.link}`;
       state.isPlay = true;
       this.setState(state);
-      await this.updateHistory(0);
-      this.updateLastView(0);
+
       if (state.playDetail.idx != this.state.playDetail.idx) {
         this.hint.show('数据获取成功，但是渲染失败', 'err');
       }
@@ -129,8 +111,6 @@ class Player extends React.Component {
       state.uri = `${this.moviePrefix}${state.playDetail.link}`;
       state.isPlay = true;
       this.setState(state);
-      await this.updateHistory(0);
-      this.updateLastView(0);
     } catch (e) {
       let msg = `获取电影资源失败`;
       console.log(e);
@@ -163,11 +143,13 @@ class Player extends React.Component {
   }
 
   async componentDidMount() {
-    let {source_type, id, idx} = this.props.route.params;
+    let {source_type, id, idx, play_time} = this.props.route.params;
     let state = this.state;
     state.source_type = source_type;
     state.source_id = id;
+    state.play_time = play_time;
     // this.touchView.focus();
+    console.log(play_time);
     this.enableTVEventHandler();
     try {
       if (source_type == 'teleplay') {
@@ -175,7 +157,6 @@ class Player extends React.Component {
       } else {
         await this.getMovieDetail({movie_id: id});
       }
-      global.showLastView = false;
     } catch (e) {
       let msg = `获取资源详情失败`;
       console.log(msg, e);
@@ -186,8 +167,11 @@ class Player extends React.Component {
     this.disableTVEventHandler();
   }
   onProgress(ev) {
-    // console.log(ev);
-    // let {currentTime} = ev;
+    let {currentTime, seekableDuration} = ev;
+    let tmp = Math.floor(currentTime);
+    if (tmp > 4 && tmp % 5 == 0) {
+      this.updateHistory(currentTime, seekableDuration);
+    }
   }
   onEnd() {
     let that = this;
@@ -202,7 +186,7 @@ class Player extends React.Component {
     }
   }
   renderVideo() {
-    let {uri, playDetail, isPlay} = this.state;
+    let {uri, playDetail, isPlay, play_time} = this.state;
     if (isPlay) {
       return (
         <Video
@@ -211,6 +195,7 @@ class Player extends React.Component {
           source={{uri}}
           onEnd={this.onEnd.bind(this)}
           onProgress={this.onProgress.bind(this)}
+          play_time={play_time}
         />
       );
     }

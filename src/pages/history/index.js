@@ -23,7 +23,7 @@ class History extends React.Component {
   async componentDidMount() {
     let state = this.state;
     let historyRet = await getItem('history');
-    state.history = historyRet.value;
+    state.history = historyRet.value == null ? [] : historyRet.value;
     this.setState(state);
   }
   renderNone() {
@@ -37,15 +37,17 @@ class History extends React.Component {
   }
   renderItemFn({item, index}) {
     let {focus_idx} = this.state;
+    console.log(item);
     return (
       <View style={{width: '30%', marginBottom: 30, marginRight: 30}}>
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => {
             this.props.navigation.navigate('Player', {
-              tv_id: item.id,
+              id: item.id,
               idx: item.idx,
               source_type: item.source_type,
+              play_time: item.play_time,
             });
           }}
           onFocus={() => {
@@ -78,20 +80,38 @@ class History extends React.Component {
                 {item.source_type == 'teleplay' ? '电视剧' : '电影'}
               </Text>
             </View>
-            <Image
+            <View
               style={{
-                resizeMode: 'cover',
+                overflow: 'hidden',
+                borderRadius: 5,
                 width: '100%',
                 height: '100%',
-                borderRadius: 5,
-              }}
-              source={{
-                uri:
-                  (item.source_type == 'teleplay'
-                    ? this.tvPicPrefix
-                    : this.moviePicPrefix) + item.pic,
-              }}
-            />
+                position: 'relative',
+              }}>
+              <Image
+                style={{
+                  resizeMode: 'cover',
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: 5,
+                }}
+                source={{
+                  uri:
+                    (item.source_type == 'teleplay'
+                      ? this.tvPicPrefix
+                      : this.moviePicPrefix) + item.pic,
+                }}
+              />
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  height: 4,
+                  backgroundColor: 'red',
+                  width: Math.floor(item.play_time / item.total_time) + '%',
+                }}></View>
+            </View>
           </View>
           <View>
             <Text
@@ -102,8 +122,10 @@ class History extends React.Component {
               {item.name}
             </Text>
             <Text style={{color: '#999'}}>
-              上次观看到第
-              <Text style={{color: '#fff200'}}>{item.idx}</Text>集
+              上次观看到
+              {item.source_type == 'teleplay'
+                ? `第${item.idx}集--第${Math.floor(item.play_time / 60)}分钟`
+                : `第${Math.floor(item.play_time / 60)}分钟`}
             </Text>
           </View>
         </TouchableOpacity>
