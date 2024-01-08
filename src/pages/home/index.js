@@ -171,7 +171,7 @@ class Home extends React.Component {
             alignItems: 'center',
             marginBottom: 10,
             marginLeft: 15,
-          }}>
+          }}>   
           <View style={{marginRight: 5}}>
             <Btn
               borderRadius={20}
