@@ -35,8 +35,8 @@ class Home extends React.Component {
     };
     this.numColumns = Math.floor((global.windowWidth - 100) / 140);
     this.limit = 20;
-    this.tvPicPrefix = global.tvPicPrefix;
-    this.moviePicPrefix = global.moviePicPrefix;
+    this.tvPicPrefix = global.base.public_tv_img;
+    this.moviePicPrefix = global.base.public_movie_img;
   }
 
   async toggleMovie() {
@@ -47,7 +47,7 @@ class Home extends React.Component {
     try {
       let ret = await getMovieList({limit: this.limit, offset: 1});
       state.list = ret.data.rows;
-      state.data_total = ret.data.total;
+      state.data_total = ret.data.count;
       state.source_type = 'movie';
       state.classify_list = state.movie_class;
       this.setState(state);
@@ -65,7 +65,8 @@ class Home extends React.Component {
     try {
       let ret = await getTeleplayList({limit: this.limit, offset: 1});
       state.list = ret.data.rows;
-      state.data_total = ret.data.total;
+      state.data_total = ret.data.count
+      console.log(ret)
       state.classify_list = state.tv_class;
       state.source_type = 'teleplay';
       this.setState(state);
@@ -107,14 +108,13 @@ class Home extends React.Component {
         return;
       }
       let historyRet = await getItem('history');
-      console.log(historyRet);
       if (historyRet.value != null && historyRet.value.length > 0) {
         state.lastView = historyRet.value[0];
         console.log(state.lastView);
         state.showLastView = true;
       }
       state.list = ret3.data.rows;
-      state.data_total = ret3.data.total;
+      state.data_total = ret3.data.count;
       state.tv_class = ret1.data;
       state.movie_class = ret2.data;
       state.classify_list = ret2.data;

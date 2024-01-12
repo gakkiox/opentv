@@ -1,11 +1,8 @@
 import React from 'react';
 import {View, Text, Dimensions, Image} from 'react-native';
 import {getItem, setItem} from '@/utils/storage';
+import { getConfigSpace } from '@/api/index';
 
-global.theme = {
-  color1: '#297FF8',
-  color2: '#fed854',
-};
 
 global.windowWidth = Dimensions.get('window').width;
 
@@ -14,12 +11,15 @@ class Init extends React.Component {
     super(props);
     this.state = {};
   }
+  async getSpace(){
+    let ret = await getConfigSpace();
+    global.base = ret.data;
+  }
   async initBaseUrl() {
     let url = 'http://192.168.1.220:7001';
     if (process.env.NODE_ENV == 'development') {
-      url = 'http://192.168.1.220:8440';
+      url = 'http://192.168.1.102:8440';
     }
-    let publicUrl = 'http://192.168.1.220:7005';
     global.defaulturl = url;
     let urlRet = await getItem('baseurl');
     if (urlRet.value != null) {
@@ -28,10 +28,8 @@ class Init extends React.Component {
       global.baseurl = url;
       await setItem('baseurl', url);
     }
-    global.tvPicPrefix = `${publicUrl}/tv_img/`;
-    global.tvPrefix = `${publicUrl}/tv/`;
-    global.moviePicPrefix = `${publicUrl}/movie_img/`;
-    global.moviePrefix = `${publicUrl}/movie/`;
+    global.baseurl = url;
+    console.log(global.baseurl)
   }
   async initHistory() {
     let history = [];
@@ -42,6 +40,7 @@ class Init extends React.Component {
   }
   async init() {
     await this.initBaseUrl();
+    await this.getSpace();
     await this.initHistory();
     let t = setTimeout(() => {
       clearTimeout(t);
@@ -49,7 +48,7 @@ class Init extends React.Component {
     }, 2000);
   }
   async componentDidMount() {
-    await this.init();
+    await this.init()
     this.props.navigation.addListener('focus', () => {
       this.props.navigation.navigate('Home');
     });

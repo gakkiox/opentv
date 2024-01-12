@@ -20,14 +20,14 @@ class BtnComponent extends React.Component {
     color: 'white',
     marginRight: 'auto',
     activeColor: '#297FF8',
-    icon: false,
+    icon: 'none',
     iconSize: 16,
-  };
+  }
   render() {
     let {is_focus} = this.state,
       props = this.props;
     function renderIcon() {
-      if (!props.icon) return;
+      if (props.icon=='none') return;
       return (
         <Icon
           name={props.icon}

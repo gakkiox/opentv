@@ -1,15 +1,15 @@
 import React from 'react';
 import {Text, View, TVEventHandler, StyleSheet, Image} from 'react-native';
 import Hint from '@/pages/components/hint.js';
-import {getTeleplayPlay, getMoviePlay} from '@/api/index';
+import {getTeleplayPlay, getMovieInfo} from '@/api/index';
 import {setItem, getItem} from '@/utils/storage.js';
 import Video from '@/pages/components/video.js';
 
 class Player extends React.Component {
   constructor(props) {
     super(props);
-    this.tvPrefix = global.tvPrefix;
-    this.moviePrefix = global.moviePrefix;
+    this.tvPrefix =  global.base.public_tv_space;
+    this.moviePrefix = global.base.public_movie_space;
     this.state = {
       source_type: 'teleplay',
       uri: '',
@@ -76,6 +76,7 @@ class Player extends React.Component {
       params.idx = state.playDetail.idx - 1;
       this.hint.show('正在为您加载上一集');
     }
+    state.play_time = 0;
     this.setState(state);
     await this.getTvDetail(params);
   }
@@ -87,10 +88,10 @@ class Player extends React.Component {
         this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
         return;
       }
-      state.playDetail = ret.data.play_detail;
+      state.playDetail = ret.data.find(a=>a.idx == params.idx);
       state.playList = ret.data.play_list;
       state.uri = `${this.tvPrefix}${state.playDetail.word}/${state.playDetail.link}`;
-      // state.uri = `http://192.168.1.220:7005/tv/${state.playDetail.word}/${state.playDetail.link}`;
+      // state.uri = `http://192.168.1.220:7005/tv/${state.playDetail.word}/${state.playDetail.link}`
       state.isPlay = true;
       this.setState(state);
 
@@ -106,7 +107,7 @@ class Player extends React.Component {
   async getMovieDetail(params) {
     let state = this.state;
     try {
-      let ret = await getMoviePlay(params);
+      let ret = await getMovieInfo(params);
       state.playDetail = ret.data;
       state.uri = `${this.moviePrefix}${state.playDetail.link}`;
       state.isPlay = true;
@@ -153,9 +154,9 @@ class Player extends React.Component {
     this.enableTVEventHandler();
     try {
       if (source_type == 'teleplay') {
-        await this.getTvDetail({tv_id: id, idx});
+        await this.getTvDetail({id, idx});
       } else {
-        await this.getMovieDetail({movie_id: id});
+        await this.getMovieDetail({id});
       }
     } catch (e) {
       let msg = `获取资源详情失败`;
@@ -195,7 +196,7 @@ class Player extends React.Component {
           source={{uri}}
           onEnd={this.onEnd.bind(this)}
           onProgress={this.onProgress.bind(this)}
-          play_time={play_time}
+          playTime={play_time}
         />
       );
     }

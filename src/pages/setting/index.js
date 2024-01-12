@@ -148,11 +148,7 @@ class Setting extends React.Component {
                     this.props.navigation.navigate('playTest');
                   }}
                 />
-                <Cell
-                  title="所有设置恢复默认"
-                  focusCell={() => this.focusCellHandle('restoreDefault')}
-                  pressCell={this.restoreDefault.bind(this)}
-                />
+
                 <Cell
                   title="检查更新"
                   focusCell={() => this.focusCellHandle('checkUpdate')}
@@ -164,6 +160,11 @@ class Setting extends React.Component {
                   pressCell={() => {
                     this.props.navigation.navigate('otherSetting');
                   }}
+                />
+                <Cell
+                  title="清除所有本地数据"
+                  focusCell={() => this.focusCellHandle('restoreDefault')}
+                  pressCell={this.restoreDefault.bind(this)}
                 />
               </ScrollView>
             </View>

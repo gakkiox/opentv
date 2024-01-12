@@ -51,15 +51,15 @@ export function getTeleplayList(data) {
 export function getMovieList(data) {
   return post('/v1/app/movie/list', data);
 }
-export function getMovieDetail(data) {
-  return post('/v1/app/movie/detail', data);
+export function getMovieInfo(data) {
+  return post('/v1/app/movie/info', data);
 }
-export function getTeleplayDetail(data) {
-  return post('/v1/app/tv/detail', data);
+export function getTeleplayInfo(data) {
+  return post('/v1/app/tv/info', data);
 }
 export function getTeleplayPlay(data) {
   return post('/v1/app/tv/play', data);
 }
-export function getMoviePlay(data) {
-  return post('/v1/app/movie/play', data);
+export function getConfigSpace(data) {
+  return post('/v1/config/space', data);
 }

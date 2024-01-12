@@ -54,8 +54,8 @@ class VideoComponent extends React.Component {
     state.paused = false;
     state.progress = 0;
     state.hintText = '';
-    state.currentTime = this.props.playTime;
-    this.video.seek(this.props.playTime)
+    state.currentTime = this.props.play_time;
+    this.video.seek(this.props.play_time);
     if (state.showControls) {
       this.resetControlTimeout();
     }
@@ -176,7 +176,7 @@ class VideoComponent extends React.Component {
             style={[
               styles.fullScreen,
               {
-                opacity: showControls ? 1 : 0,
+                opacity: 1,
                 zIndex: 10,
                 backgroundColor: 'transparent',
               },
@@ -187,12 +187,53 @@ class VideoComponent extends React.Component {
               </View>
               <View
                 style={{
+                  position: 'absolute',
+                  right: 20,
+                  top: 20,
+                  padding: 10,
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  borderRadius: 5,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <View>
+                  <View style={{flexDirection: 'row', marginBottom: 10}}>
+                    <Text style={{fontSize: 20, fontWeight: 600}}>59:33</Text>
+                    <Text style={{fontSize: 20, fontWeight: 600}}>/</Text>
+                    <Text style={{fontSize: 20, fontWeight: 600}}>1:24:33</Text>
+                  </View>
+                  <View
+                    style={{
+                      width: '100%',
+                      height: 3,
+                      backgroundColor: 'white',
+                    }}>
+                    <View
+                      style={{
+                        width:  `${((progress / duration) * 100).toFixed(2)}%`,
+                        height: 3,
+                        backgroundColor: 'red',
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        zIndex: 20,
+                      }}></View>
+                  </View>
+                </View>
+                <View style={{marginLeft: 10}}>
+                  <View> 
+                    <Icon name="pause-circle" size={40} color="white" />
+                  </View>
+                </View>
+              </View>
+              <View
+                style={{
                   flex: 1,
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <View>
+                <View style={{marginLeft: 10}}>
                   <View>
                     <Icon
                       name={paused ? 'play' : 'pause'}

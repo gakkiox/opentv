@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, Image, StyleSheet, ScrollView} from 'react-native';
-import {getTeleplayDetail, getMovieDetail} from '@/api/index';
+import {getTeleplayInfo, getMovieInfo} from '@/api/index';
 import Btn from '@/pages/components/btn';
 import Hint from '@/pages/components/hint.js';
 
@@ -11,8 +11,8 @@ class Detail extends React.Component {
       film_data: {teleplay_list: []},
       source_type: 'teleplay',
     };
-    this.tvPicPrefix = global.tvPicPrefix;
-    this.moviePicPrefix = global.moviePicPrefix;
+    this.tvPicPrefix = global.base.public_tv_img;
+    this.moviePicPrefix = global.base.public_movie_img;
   }
   async componentDidMount() {
     try {
@@ -20,14 +20,14 @@ class Detail extends React.Component {
       let {source_type, id} = this.props.route.params;
       state.source_type = source_type;
       if (source_type == 'teleplay') {
-        let ret = await getTeleplayDetail({id});
+        let ret = await getTeleplayInfo({id});
         if (ret.code != 200) {
           this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
           return;
         }
         state.film_data = ret.data;
       } else {
-        let ret2 = await getMovieDetail({id});
+        let ret2 = await getMovieInfo({id});
         if (ret2.code != 200) {
           this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
           return;

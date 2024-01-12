@@ -6,7 +6,7 @@ class HeadBtnComponent extends React.Component {
     super(props);
     this.state = {
       is_focus: false,
-      theme: global.theme.color2,
+      theme: "#fed854",
     };
   }
   render() {

@@ -8,43 +8,32 @@ import {
   TVEventHandler,
 } from 'react-native';
 import Video from '@/pages/components/video.js';
+import Btn from '@/pages/components/btn';
+
 class PlayTest extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      url: "https://www.w3schools.com/html/movie.mp4",
+      playCurrent: "mp4"
+    };
   }
-  _enableTVEventHandler() {
-    this._tvEventHandler = new TVEventHandler();
-    this._tvEventHandler.enable(this, function (cmp, evt) {
-      console.log(evt);
-      if (evt && evt.eventType === 'right') {
-        cmp.player.playFastBack('fast');
-      } else if (evt && evt.eventType === 'up') {
-        console.log('prev');
-      } else if (evt && evt.eventType === 'left') {
-        cmp.player.playFastBack('back');
-      } else if (evt && evt.eventType === 'down') {
-        console.log('next');
-      } else if (evt && evt.eventType === 'select') {
-        cmp.player.togglePlayPause();
-      }
-    });
+  playMp4(){
+    this.setState({
+      url: "https://www.w3schools.com/html/movie.mp4",
+      playCurrent: "mp4"
+    })
   }
-  _disableTVEventHandler() {
-    if (this._tvEventHandler) {
-      this._tvEventHandler.disable();
-      delete this._tvEventHandler;
-    }
+  playM3u8(){
+    this.setState({
+      url: "http://kbs-dokdo.gscdn.com/dokdo_300/_definst_/dokdo_300.stream/playlist.m3u8",
+      playCurrent: "m3u8"
+    })
   }
-
-  async componentDidMount() {
-    this._enableTVEventHandler();
-  }
-  componentWillUnmount() {
-    this._disableTVEventHandler();
-  }
+  async componentDidMount() {}
+  componentWillUnmount() {}
   render() {
-    let {cellKey} = this.state;
+    let {url, playCurrent} = this.state;
     return (
       <View
         style={{
@@ -64,15 +53,42 @@ class PlayTest extends React.Component {
           <View style={{marginBottom: 20}}>
             <Text style={{color: 'white', fontSize: 30}}>播放测试</Text>
           </View>
-          <View></View>
+          <View style={{flexDirection: "row", marginBottom: 10}}>
+            <Btn
+              borderRadius={3}
+              paddingVertical={10}
+              paddingHorizontal={25}
+              marginRight={6}
+              title="MP4测试"
+              backgroundColor="rgba(255,255,255,0.6)"
+              color="#297FF8"
+              activeColor="red"
+              icon={playCurrent=='mp4'?'play':'none'}
+              iconSize={24}
+              onPress={this.playMp4.bind(this)}
+            />
+            <Btn
+              borderRadius={3}
+              paddingVertical={10}
+              paddingHorizontal={25}
+              marginRight={6}
+              title="M3U8测试"
+              backgroundColor="rgba(255,255,255,0.6)"
+              color="#297FF8"
+              activeColor="red"
+              icon={playCurrent=='m3u8'?'play':'none'}
+              iconSize={24}
+              onPress={this.playM3u8.bind(this)}
+            />
+          </View>
           <View style={{flex: 1, alignItems: 'center'}}>
-            <View style={{width: '60%'}}>
+            <View style={{width: '50%', backgroundColor: 'black'}}>
               <Video
                 ref={e => (this.player = e)}
                 resizeMode="contain"
-                name="当今四大基石"
+                name="播放测试"
                 source={{
-                  uri: 'http://192.168.1.220:8440/public/tv/1fa5cea063d84891/12ba9818f21da1c8/index.m3u8',
+                  uri:url,
                 }}
               />
             </View>
