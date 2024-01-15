@@ -1,14 +1,14 @@
 import React from 'react';
-import {Text, View, TVEventHandler, StyleSheet, Image} from 'react-native';
+import { Text, View, TVEventHandler, StyleSheet, Image } from 'react-native';
 import Hint from '@/pages/components/hint.js';
-import {getTeleplayPlay, getMovieInfo} from '@/api/index';
-import {setItem, getItem} from '@/utils/storage.js';
+import { getTeleplayPlay, getMovieInfo } from '@/api/index';
+import { setItem, getItem } from '@/utils/storage.js';
 import Video from '@/pages/components/video.js';
 
 class Player extends React.Component {
   constructor(props) {
     super(props);
-    this.tvPrefix =  global.base.public_tv_space;
+    this.tvPrefix = global.base.public_tv_space;
     this.moviePrefix = global.base.public_movie_space;
     this.state = {
       source_type: 'teleplay',
@@ -37,7 +37,6 @@ class Player extends React.Component {
       play_time: currentTime,
       total_time: total_time,
     };
-    console.log(film);
     if (index == -1) {
       if (history.length > 20) {
         history.pop();
@@ -56,10 +55,10 @@ class Player extends React.Component {
       return;
     }
     let params = {
-      tv_id: state.playDetail.tv_id,
+      id: state.playDetail.tv_id,
     };
     if (type == 'next') {
-      if (state.playDetail.idx == state.playList.length) {
+      if (state.playDetail.idx == state.playDetail.count) {
         let msg = `抱歉电视剧没有下一集了哟~`;
         this.hint.show(msg);
         return;
@@ -78,9 +77,9 @@ class Player extends React.Component {
     }
     state.play_time = 0;
     this.setState(state);
-    await this.getTvDetail(params);
+    await this.getTvPlay(params);
   }
-  async getTvDetail(params) {
+  async getTvPlay(params) {
     let state = this.state;
     try {
       let ret = await getTeleplayPlay(params);
@@ -88,8 +87,8 @@ class Player extends React.Component {
         this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
         return;
       }
-      state.playDetail = ret.data.find(a=>a.idx == params.idx);
-      state.playList = ret.data.play_list;
+
+      state.playDetail = ret.data;
       state.uri = `${this.tvPrefix}${state.playDetail.word}/${state.playDetail.link}`;
       // state.uri = `http://192.168.1.220:7005/tv/${state.playDetail.word}/${state.playDetail.link}`
       state.isPlay = true;
@@ -144,19 +143,19 @@ class Player extends React.Component {
   }
 
   async componentDidMount() {
-    let {source_type, id, idx, play_time} = this.props.route.params;
+    let { source_type, id, idx, play_time } = this.props.route.params;
     let state = this.state;
     state.source_type = source_type;
     state.source_id = id;
     state.play_time = play_time;
     // this.touchView.focus();
-    console.log(play_time);
+    // console.log(play_time);
     this.enableTVEventHandler();
     try {
       if (source_type == 'teleplay') {
-        await this.getTvDetail({id, idx});
+        await this.getTvPlay({ id, idx });
       } else {
-        await this.getMovieDetail({id});
+        await this.getMovieDetail({ id });
       }
     } catch (e) {
       let msg = `获取资源详情失败`;
@@ -168,7 +167,7 @@ class Player extends React.Component {
     this.disableTVEventHandler();
   }
   onProgress(ev) {
-    let {currentTime, seekableDuration} = ev;
+    let { currentTime, seekableDuration } = ev;
     let tmp = Math.floor(currentTime);
     if (tmp > 4 && tmp % 5 == 0) {
       this.updateHistory(currentTime, seekableDuration);
@@ -187,13 +186,13 @@ class Player extends React.Component {
     }
   }
   renderVideo() {
-    let {uri, playDetail, isPlay, play_time} = this.state;
+    let { uri, playDetail, isPlay, play_time } = this.state;
     if (isPlay) {
       return (
         <Video
           name={playDetail.play_name}
           ref={e => (this.player = e)}
-          source={{uri}}
+          source={{ uri }}
           onEnd={this.onEnd.bind(this)}
           onProgress={this.onProgress.bind(this)}
           playTime={play_time}

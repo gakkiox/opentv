@@ -1,22 +1,10 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  FlatList,
-  Text,
-} from 'react-native';
+import { View, StyleSheet, ScrollView, Image, FlatList, Text, } from 'react-native';
 import Btn from '@/pages/components/btn';
 import HeadBtn from './components/headBtn';
 import Item from './components/item';
-import {
-  getTeleplayClassify,
-  getMovieClassify,
-  getTeleplayList,
-  getMovieList,
-} from '@/api/index';
-import {getItem} from '@/utils/storage';
+import { getTeleplayClassify, getMovieClassify, getTeleplayList, getMovieList, } from '@/api/index';
+import { getItem } from '@/utils/storage';
 import Hint from '@/pages/components/hint.js';
 
 class Home extends React.Component {
@@ -29,7 +17,8 @@ class Home extends React.Component {
       source_type: 'teleplay',
       list: [],
       data_total: 0,
-      offset: 1,
+      offset: 0,
+      pageSize: 20,
       lastView: false,
       showLastView: false,
     };
@@ -45,7 +34,7 @@ class Home extends React.Component {
       return;
     }
     try {
-      let ret = await getMovieList({limit: this.limit, offset: 1});
+      let ret = await getMovieList({ limit: this.limit, offset: 0 });
       state.list = ret.data.rows;
       state.data_total = ret.data.count;
       state.source_type = 'movie';
@@ -63,10 +52,10 @@ class Home extends React.Component {
       return;
     }
     try {
-      let ret = await getTeleplayList({limit: this.limit, offset: 1});
+      let ret = await getTeleplayList({ limit: this.limit, offset: 0 });
       state.list = ret.data.rows;
-      state.data_total = ret.data.count
-      console.log(ret)
+      state.data_total = ret.data.count;
+      console.log(ret);
       state.classify_list = state.tv_class;
       state.source_type = 'teleplay';
       this.setState(state);
@@ -83,11 +72,11 @@ class Home extends React.Component {
       if (state.source_type == 'teleplay') {
         let ret = await getTeleplayList({
           limit: this.limit,
-          offset: state.offset,
+          offset: state.offset * this.limit,
         });
         state.list = state.list.concat(ret.data.rows);
       } else {
-        let ret = await getMovieList({limit: this.limit, offset: state.offset});
+        let ret = await getMovieList({ limit: this.limit, offset: state.offset * this.limit });
         state.list = state.list.concat(ret.data.rows);
       }
       this.setState(state);
@@ -102,7 +91,7 @@ class Home extends React.Component {
     try {
       let ret1 = await getTeleplayClassify();
       let ret2 = await getMovieClassify();
-      let ret3 = await getTeleplayList({limit: this.limit, offset: 1});
+      let ret3 = await getTeleplayList({ limit: this.limit, offset: 0 });
       if (ret1.code != 200) {
         this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
         return;
@@ -126,15 +115,15 @@ class Home extends React.Component {
       console.log(msg, e);
     }
   }
-  componentWillUnmount() {}
+  componentWillUnmount() { }
   renderHeader() {
-    let {classify_list} = this.state;
+    let { classify_list } = this.state;
     return <View></View>;
     if (this.state.source_type == 'teleplay') {
       return <View></View>;
     }
     return (
-      <View style={{paddingVertical: 8}}>
+      <View style={{ paddingVertical: 8 }}>
         <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
           {classify_list.map((item, index) => {
             return (
@@ -149,9 +138,9 @@ class Home extends React.Component {
   }
   renderLastView() {
     let that = this;
-    let {showLastView, lastView} = that.state;
+    let { showLastView, lastView } = that.state;
     function gotoPlayer() {
-      that.setState({showLastView: false});
+      that.setState({ showLastView: false });
       that.props.navigation.navigate('Player', {
         id: lastView.id,
         idx: lastView.idx,
@@ -171,8 +160,8 @@ class Home extends React.Component {
             alignItems: 'center',
             marginBottom: 10,
             marginLeft: 15,
-          }}>   
-          <View style={{marginRight: 5}}>
+          }}>
+          <View style={{ marginRight: 5 }}>
             <Btn
               borderRadius={20}
               paddingVertical={5}
@@ -181,17 +170,17 @@ class Home extends React.Component {
               title="继续观看"
               onPress={gotoPlayer}></Btn>
           </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={{color: '#fed854'}}>{text}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: '#fed854' }}>{text}</Text>
           </View>
         </View>
       );
     }
   }
   renderItem(item) {
-    let {source_type} = this.state;
+    let { source_type } = this.state;
     return (
-      <View style={{marginBottom: 10}}>
+      <View style={{ marginBottom: 10 }}>
         <Item
           source={{
             uri:
@@ -214,8 +203,8 @@ class Home extends React.Component {
   renderNoData() {
     if (this.state.data_total < 1) {
       return (
-        <View style={{alignItems: 'center', width: '100%', paddingTop: 20}}>
-          <Text style={{color: 'grey', fontSize: 16}}>
+        <View style={{ alignItems: 'center', width: '100%', paddingTop: 20 }}>
+          <Text style={{ color: 'grey', fontSize: 16 }}>
             暂时该分类还没有影视资源哟！
           </Text>
         </View>
@@ -223,7 +212,7 @@ class Home extends React.Component {
     }
   }
   render() {
-    let {list} = this.state;
+    let { list } = this.state;
     return (
       <View
         style={{
@@ -235,7 +224,7 @@ class Home extends React.Component {
         <Hint ref={e => (this.hint = e)} />
         <View style={[styles.container]}>
           <View style={[styles.head]}>
-            <View style={{marginLeft: 15}}>
+            <View style={{ marginLeft: 15 }}>
               <HeadBtn
                 title="电视剧"
                 onPress={this.toggleTv.bind(this)}></HeadBtn>
@@ -283,13 +272,13 @@ class Home extends React.Component {
               numColumns={this.numColumns}
               data={list}
               onEndReached={this.endReached.bind(this)}
-              renderItem={({item}) => this.renderItem(item)}
+              renderItem={({ item }) => this.renderItem(item)}
             />
           </View>
         </View>
-        <View style={[styles.fullScreen, {zIndex: 1}]}>
+        <View style={[styles.fullScreen, { zIndex: 1 }]}>
           <Image
-            style={{width: '100%', height: '100%', opacity: 0.4}}
+            style={{ width: '100%', height: '100%', opacity: 0.4 }}
             source={require('@/assets/home.jpg')}
           />
         </View>
