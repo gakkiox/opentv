@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { View, FlatList, Image, StyleSheet, Text, TouchableOpacity, } from 'react-native';
 import {getItem} from '../../utils/storage';
 import Hint from '@/pages/components/hint.js';
 
@@ -17,8 +10,8 @@ class History extends React.Component {
       history: [],
       focus_idx: false,
     };
-    this.tvPicPrefix = global.tvPicPrefix;
-    this.moviePicPrefix = global.moviePicPrefix;
+    this.tvPicPrefix = global.base.public_tv_img;
+    this.moviePicPrefix = global.base.public_movie_img;
   }
   async componentDidMount() {
     let state = this.state;
