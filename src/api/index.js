@@ -15,11 +15,6 @@ function get(url) {
 function post(url, data = {}) {
   const baseurl = global.baseurl;
   return new Promise((resolve, reject) => {
-    // let baseurl = global.defaulturl;
-    // let dat = await getItem('baseurl');
-    // if (dat.status) {
-    //   baseurl = dat.value;
-    // }
     fetch(baseurl + url, {
       method: 'post',
       headers: {
