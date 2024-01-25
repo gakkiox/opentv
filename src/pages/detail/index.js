@@ -172,13 +172,16 @@ class Detail extends React.Component {
                   : '电影'}
               </Text>
               <Text style={{color: 'black', fontSize: 14}}>
-                {film_data.actors}
+                分类：{film_data.classify}
               </Text>
               <Text style={{color: 'black', fontSize: 14}}>
-                {film_data.score}
+                演员：{film_data.actors}
+              </Text>
+              <Text style={{color: 'black', fontSize: 14}}>
+                豆瓣评分：{film_data.score}
               </Text>
               <Text style={{fontSize: 12, color: 'black'}}>
-                {film_data.desc}
+                简介：{film_data.desc}
               </Text>
             </View>
           </View>

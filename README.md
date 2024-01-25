@@ -1,3 +1,24 @@
+## 项目介绍
+
+<img src="./imgs/tv_banner.png" width="150px" height="auto">
+
+opentv安卓电视端软件，用于播放已经在后台添加了的影视资源
+
+![列表首页](./imgs/20240124141715.png )
+
+
+![详情页面](./imgs/20240124141734.png)
+
+
+![设置页面](./imgs/20240124141751.png)
+
+下一步准备重新设计页面，参考`ios`的`vidhub`页面设计和UI配色。
+
+
+## 安装使用
+
+请直接在右侧`发行版`中下载`apk`文件进行安装
+
 ## 开发任务
 
 - [x] 安卓app端使用localstorage
@@ -18,17 +39,5 @@
 ## 好用的网站
 - [安卓图标生成](https://makeappicon.com/) 
 ## code-push
-appcenter
-```
-添加React-Native app
-appcenter apps create -d opentv -o Android -p React-Native
-appcenter apps create -d opentv -o iOS -p React-Native
-添加环境
-appcenter codepush deployment add -a gakkiox-outlook.com/opentv Staging
-appcenter codepush deployment add -a gakkiox-outlook.com/opentv Production
-查看环境
-appcenter codepush deployment list -k -a gakkiox-outlook.com/opentv
-上传更新到Production
-appcenter codepush release-react -a gakkiox-outlook.com/opentv -d Production
-```
+
 

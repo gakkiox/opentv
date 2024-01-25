@@ -11,14 +11,25 @@ class Init extends React.Component {
     this.state = {};
   }
   async getSpace() {
-    let ret = await getConfigSpace();
-    console.log(ret.data);
-    global.base = ret.data;
+    let err_data = {
+      public_tv_img: '',
+      public_movie_img: '',
+    };
+    try {
+      let ret = await getConfigSpace();
+      if (ret.code != 200) {
+        global.base = err_data;
+      }
+      global.base = ret.data;
+    } catch (e) {
+      console.log(e);
+      global.base = err_data;
+    }
   }
   async initBaseUrl() {
     let url = 'http://192.168.1.220:7001';
     if (process.env.NODE_ENV == 'development') {
-      url = 'http://192.168.1.220:8440';
+      url = 'http://192.168.1.105:8440';
     }
     global.defaulturl = url;
     let urlRet = await getItem('baseurl');
@@ -28,8 +39,6 @@ class Init extends React.Component {
       global.baseurl = url;
       await setItem('baseurl', url);
     }
-    global.baseurl = url;
-    console.log(global.baseurl);
   }
   async initHistory() {
     let history = [];

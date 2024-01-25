@@ -55,7 +55,7 @@ class VideoComponent extends React.Component {
     state.progress = 0;
     state.hintText = '';
     state.currentTime = this.props.playTime;
-    this.video.seek(this.props.playTime)
+    this.video.seek(this.props.playTime);
     if (state.showControls) {
       this.resetControlTimeout();
     }
@@ -228,7 +228,7 @@ class VideoComponent extends React.Component {
                       style={{
                         width: '100%',
                         height: 3,
-                        backgroundColor: 'red',
+                        backgroundColor: '#00b96b',
                         position: 'relative',
                       }}>
                       <View
@@ -274,7 +274,7 @@ class VideoComponent extends React.Component {
             height: 2,
             opacity: showControls ? 0 : 1,
             width: `${((progress / duration) * 100).toFixed(2)}%`,
-            backgroundColor: 'red',
+            backgroundColor: '#00b96b',
           }}></View>
       </View>
     );

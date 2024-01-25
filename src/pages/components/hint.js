@@ -37,7 +37,7 @@ class HintComponent extends React.Component {
         ref={e => (this.view = e)}
         style={{
           position: 'absolute',
-          top:  -150,
+          top: -150,
           right: 0,
           flexDirection: 'row',
           justifyContent: 'center',

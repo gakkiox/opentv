@@ -110,7 +110,7 @@ class Home extends React.Component {
       this.hint.show('获取数据成功');
       this.setState(state);
     } catch (e) {
-      let msg = `获取数据失败`;
+      let msg = `获取数据失败，请检查服务器设置或稍后重试`;
       this.hint.show(msg, 'red');
       console.log(msg, e);
     }

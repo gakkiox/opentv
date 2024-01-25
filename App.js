@@ -21,3 +21,18 @@ class App extends React.Component {
 }
 
 export default CodePush(CodePushOptions)(App);
+/**
+ * appcenter
+```
+添加React-Native app
+appcenter apps create -d opentv -o Android -p React-Native
+appcenter apps create -d opentv -o iOS -p React-Native
+添加环境
+appcenter codepush deployment add -a gakkiox-outlook.com/opentv Staging
+appcenter codepush deployment add -a gakkiox-outlook.com/opentv Production
+查看环境
+appcenter codepush deployment list -k -a gakkiox-outlook.com/opentv
+上传更新到Production
+appcenter codepush release-react -a gakkiox-outlook.com/opentv -d Production
+```
+ */
