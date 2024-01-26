@@ -1,218 +1,31 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Image, FlatList, Text, } from 'react-native';
+import {View, StyleSheet, ScrollView, Image, FlatList} from 'react-native';
 import Btn from '@/pages/components/btn';
-import HeadBtn from './components/headBtn';
-import Item from './components/item';
-import { getTeleplayClassify, getMovieClassify, getTeleplayList, getMovieList, } from '@/api/index';
-import { getItem } from '@/utils/storage';
-import Hint from '@/pages/components/hint.js';
+import Library from '@/pages/home/library';
+
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      classify_list: [],
-      tv_class: [],
-      movie_class: [],
-      source_type: 'teleplay',
-      list: [],
-      data_total: 0,
-      offset: 0,
-      pageSize: 20,
-      lastView: false,
-      showLastView: false,
+      showType: 'Home',
     };
-    this.numColumns = Math.floor((global.windowWidth - 100) / 140);
-    this.limit = 20;
     this.tvPicPrefix = global.base.public_tv_img;
     this.moviePicPrefix = global.base.public_movie_img;
   }
-
-  async toggleMovie() {
-    let state = this;
-    if (state.source_type == 'movie') {
-      return;
-    }
-    try {
-      let ret = await getMovieList({ limit: this.limit, offset: 0 });
-      state.list = ret.data.rows;
-      state.data_total = ret.data.count;
-      state.source_type = 'movie';
-      state.classify_list = state.movie_class;
-      this.setState(state);
-    } catch (e) {
-      let msg = `获取电影列表失败`;
-      this.hint.show(msg, 'red');
-      console.log(e, msg);
-    }
-  }
-  async toggleTv() {
-    let state = this;
-    if (state.source_type == 'teleplay') {
-      return;
-    }
-    try {
-      let ret = await getTeleplayList({ limit: this.limit, offset: 0 });
-      state.list = ret.data.rows;
-      state.data_total = ret.data.count;
-      console.log(ret);
-      state.classify_list = state.tv_class;
-      state.source_type = 'teleplay';
-      this.setState(state);
-    } catch (e) {
-      let msg = `获取电视剧列表失败`;
-      this.hint.show(msg, 'red');
-      console.log(e, msg);
-    }
-  }
-  async endReached() {
+  componentDidMount() {
     let state = this.state;
-    try {
-      ++state.offset;
-      if (state.source_type == 'teleplay') {
-        let ret = await getTeleplayList({
-          limit: this.limit,
-          offset: state.offset * this.limit,
-        });
-        state.list = state.list.concat(ret.data.rows);
-      } else {
-        let ret = await getMovieList({ limit: this.limit, offset: state.offset * this.limit });
-        state.list = state.list.concat(ret.data.rows);
-      }
-      this.setState(state);
-    } catch (e) {
-      let msg = `获取影视列表失败`;
-      this.hint.show(msg, 'red');
-      console.log(e, msg);
-    }
+    this.btn1.focusHandle();
+    this.setState(state);
   }
-  async componentDidMount() {
-    let state = this;
-    try {
-      let ret1 = await getTeleplayClassify();
-      let ret2 = await getMovieClassify();
-      let ret3 = await getTeleplayList({ limit: this.limit, offset: 0 });
-      if (ret1.code != 200) {
-        this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
-        return;
-      }
-      let historyRet = await getItem('history');
-      if (historyRet.value != null && historyRet.value.length > 0) {
-        state.lastView = historyRet.value[0];
-        console.log(state.lastView);
-        state.showLastView = true;
-      }
-      state.list = ret3.data.rows;
-      state.data_total = ret3.data.count;
-      state.tv_class = ret1.data;
-      state.movie_class = ret2.data;
-      state.classify_list = ret2.data;
-      this.hint.show('获取数据成功');
-      this.setState(state);
-    } catch (e) {
-      let msg = `获取数据失败，请检查服务器设置或稍后重试`;
-      this.hint.show(msg, 'red');
-      console.log(msg, e);
-    }
-  }
-  componentWillUnmount() { }
-  renderHeader() {
-    let { classify_list } = this.state;
-    return <View></View>;
-    if (this.state.source_type == 'teleplay') {
-      return <View></View>;
-    }
-    return (
-      <View style={{ paddingVertical: 8 }}>
-        <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
-          {classify_list.map((item, index) => {
-            return (
-              <View key={index}>
-                <Btn title={item.name} />
-              </View>
-            );
-          })}
-        </ScrollView>
-      </View>
-    );
-  }
-  renderLastView() {
-    let that = this;
-    let { showLastView, lastView } = that.state;
-    function gotoPlayer() {
-      that.setState({ showLastView: false });
-      that.props.navigation.navigate('Player', {
-        id: lastView.id,
-        idx: lastView.idx,
-        source_type: lastView.source_type,
-        play_time: lastView.play_time,
-      });
-    }
-    let text =
-      lastView.source_type == 'teleplay'
-        ? `电视剧${lastView.name}第${lastView.idx}集`
-        : `电影${lastView.name}`;
-    if (showLastView) {
-      return (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 10,
-            marginLeft: 15,
-          }}>
-          <View style={{ marginRight: 5 }}>
-            <Btn
-              borderRadius={20}
-              paddingVertical={5}
-              paddingHorizontal={15}
-              backgroundColor="transparent"
-              title="继续观看"
-              onPress={gotoPlayer}></Btn>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: '#fed854' }}>{text}</Text>
-          </View>
-        </View>
-      );
-    }
-  }
-  renderItem(item) {
-    let { source_type } = this.state;
-    return (
-      <View style={{ marginBottom: 10 }}>
-        <Item
-          source={{
-            uri:
-              (source_type == 'teleplay'
-                ? this.tvPicPrefix
-                : this.moviePicPrefix) + item.pic,
-          }}
-          onPress={() =>
-            this.props.navigation.navigate('Detail', {
-              id: item.id,
-              source_type: this.state.source_type,
-            })
-          }
-          title={item.name}
-          score={item.score}
-        />
-      </View>
-    );
-  }
-  renderNoData() {
-    if (this.state.data_total < 1) {
-      return (
-        <View style={{ alignItems: 'center', width: '100%', paddingTop: 20 }}>
-          <Text style={{ color: 'grey', fontSize: 16 }}>
-            暂时该分类还没有影视资源哟！
-          </Text>
-        </View>
-      );
-    }
+  changeShow(type) {
+    this.setState({
+      showType: type,
+    });
+    this.props.navigation.navigate(type);
   }
   render() {
-    let { list } = this.state;
+    let state = this.state;
     return (
       <View
         style={{
@@ -221,64 +34,60 @@ class Home extends React.Component {
           position: 'relative',
           backgroundColor: 'black',
         }}>
-        <Hint ref={e => (this.hint = e)} />
-        <View style={[styles.container]}>
-          <View style={[styles.head]}>
-            <View style={{ marginLeft: 15 }}>
-              <HeadBtn
-                title="电视剧"
-                onPress={this.toggleTv.bind(this)}></HeadBtn>
-            </View>
-            <View>
-              <HeadBtn
-                title="电影"
-                onPress={this.toggleMovie.bind(this)}></HeadBtn>
-            </View>
-            <View>
-              <HeadBtn
-                title="IPTV"
-                onPress={() => this.props.navigation.navigate('Iptv')}
-              />
-            </View>
-            <View>
-              <HeadBtn
-                title="设置"
-                onPress={() =>
-                  this.props.navigation.navigate('Setting')
-                }></HeadBtn>
-            </View>
-            <View>
-              <HeadBtn
-                title="观看记录"
-                onPress={() =>
-                  this.props.navigation.navigate('History')
-                }></HeadBtn>
-            </View>
-          </View>
-          {this.renderHeader()}
-          {this.renderLastView()}
+        <ScrollView
+          style={{width: '100%', position: 'relative', zIndex: 10}}
+          showsVerticalScrollIndicator={false}>
           <View
             style={{
-              flex: 1,
+              width: '100%',
               display: 'flex',
-              flexDirection: 'row',
-              paddingHorizontal: 20,
+              alignItems: 'center',
+              marginTop: 10,
             }}>
-            {this.renderNoData()}
-            <FlatList
-              //  contentContainerStyle={{justifyContent: "space-between"}}
-              onEndReachedThreshold={1}
-              showsVerticalScrollIndicator={false}
-              numColumns={this.numColumns}
-              data={list}
-              onEndReached={this.endReached.bind(this)}
-              renderItem={({ item }) => this.renderItem(item)}
-            />
+            <View
+              style={[
+                {
+                  backgroundColor: '#1D1D1D',
+                  borderRadius: 40,
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  flexDirection: 'row',
+                },
+              ]}>
+              <Btn
+                title="媒体库"
+                onPress={this.changeShow.bind(this, 'Home')}
+                style={{...styles.headBtn, ...styles.flexCenter}}
+                activeStyle={{color: '#222'}}
+                ref={e => (this.btn1 = e)}
+              />
+              <Btn
+                title="IPTV"
+                onPress={this.changeShow.bind(this, 'Iptv')}
+                style={{...styles.headBtn, ...styles.flexCenter}}
+                activeStyle={{color: '#222'}}
+              />
+              <Btn
+                title="设置"
+                onPress={this.changeShow.bind(this, 'Setting')}
+                style={{...styles.headBtn, ...styles.flexCenter}}
+                activeStyle={{color: '#222'}}
+              />
+            </View>
           </View>
-        </View>
-        <View style={[styles.fullScreen, { zIndex: 1 }]}>
+          <Library nav={this.props.navigation} />
+        </ScrollView>
+        <View
+          style={{
+            zIndex: 1,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+          }}>
           <Image
-            style={{ width: '100%', height: '100%', opacity: 0.4 }}
+            style={{width: '100%', height: '100%', opacity: 0.6}}
             source={require('@/assets/home.jpg')}
           />
         </View>
@@ -287,26 +96,18 @@ class Home extends React.Component {
   }
 }
 var styles = StyleSheet.create({
-  container: {
-    height: '100%',
-    width: '100%',
+  flexCenter: {
     display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-    zIndex: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  fullScreen: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-  },
-  head: {
-    width: '100%',
-    paddingVertical: 6,
-    display: 'flex',
-    flexDirection: 'row',
+  headBtn: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 16,
+    borderRadius: 40,
+    margin: 3,
+    overflow: 'hidden',
+    paddingVertical: 4,
   },
 });
 export default Home;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, TouchableNativeFeedback} from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
 class BtnComponent extends React.Component {
@@ -10,73 +10,53 @@ class BtnComponent extends React.Component {
     };
   }
   static defaultProps = {
-    borderRadius: 0,
-    borderColor: 'transparent',
-    borderWidth: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingVertical: 'auto',
-    paddingHorizontal: 'auto',
-    fontSize: 16,
-    color: 'white',
-    marginRight: 'auto',
-    activeColor: '#297FF8',
+    onPress: () => { },
+    title: 'none',
     icon: 'none',
-    iconSize: 16,
+    iconStyle: {},
+    style: {},
+    activeStyle: {},
+  };
+  focusHandle() {
+    this.setState({ is_focus: true });
+  }
+  blurHandle() {
+    this.setState({ is_focus: false });
   }
   render() {
-    let {is_focus} = this.state,
-      props = this.props;
+    let { is_focus } = this.state;
+    let { icon, style, activeStyle, title, onPress, iconStyle } = this.props;
+    activeStyle.color = activeStyle?.color ?? '#59C381';
+    activeStyle.backgroundColor = activeStyle?.backgroundColor ?? "#fff";
+    style.backgroundColor = style?.backgroundColor ?? '#9B9B9B';
     function renderIcon() {
-      if (props.icon=='none') return;
-      return (
-        <Icon
-          name={props.icon}
-          size={props.iconSize}
-          color={is_focus ? props.activeColor : props.color}
-          style={{marginRight: 8}}
-        />
-      );
+      if (icon == 'none') return;
+      return <Icon name={icon} size={iconStyle.fontSize} color={is_focus ? activeStyle.color : iconStyle.color} />;
     }
     return (
-      <View
+      <TouchableOpacity
+        onFocus={this.focusHandle.bind(this)}
+        onBlur={this.blurHandle.bind(this)}
+        activeOpacity={1}
         style={{
-          overflow: 'hidden',
-          borderRadius: props.borderRadius,
-          borderWidth: props.borderWidth,
-          borderColor: props.borderColor,
-          backgroundColor: is_focus ? 'white' : props.backgroundColor,
-          marginRight: props.marginRight,
-        }}>
-        <TouchableNativeFeedback
-          onFocus={() => {
-            this.setState({is_focus: true});
-          }}
-          onBlur={() => {
-            this.setState({is_focus: false});
-          }}
-          onPress={props.onPress}>
-          <View
-            style={{
-              paddingVertical: props.paddingVertical,
-              paddingHorizontal: props.paddingHorizontal,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-            }}>
-            {renderIcon()}
-            <Text
-              style={{
-                color: is_focus ? props.activeColor : props.color,
-                fontSize: props.fontSize,
-                marginRight: 4,
-              }}>
-              {this.props.title}
-            </Text>
-          </View>
-        </TouchableNativeFeedback>
-      </View>
+          ...style,
+          backgroundColor: is_focus ? activeStyle.backgroundColor : style.backgroundColor,
+        }}
+        onPress={onPress}>
+        {renderIcon()}
+        {
+          (() => {
+            if (title != 'none') {
+              return <Text
+                style={{
+                  color: is_focus ? activeStyle.color : style.color,
+                }}>
+                {title}
+              </Text>
+            }
+          })()
+        }
+      </TouchableOpacity>
     );
   }
 }

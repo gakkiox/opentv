@@ -31,7 +31,7 @@ function post(url, data = {}) {
         resolve(data);
       })
       .catch(err => {
-        console.log('my post error  ' + uri, err);
+        console.log('POST Error ' + uri, err);
         reject(err);
       });
   });
@@ -76,4 +76,7 @@ export function getTeleplayPlay(data) {
 }
 export function getConfigSpace(data) {
   return post('/v1/config/space', data);
+}
+export function getLastAdd(data) {
+  return post('/v1/app/film/last/add', data);
 }

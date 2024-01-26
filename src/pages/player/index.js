@@ -11,7 +11,7 @@ class Player extends React.Component {
     this.tvPrefix = global.base.public_tv_space;
     this.moviePrefix = global.base.public_movie_space;
     this.state = {
-      source_type: 'teleplay',
+      type: 'tv',
       uri: '',
       playDetail: {},
       playList: [],
@@ -26,12 +26,12 @@ class Player extends React.Component {
     let historyRet = await getItem('history');
     let history = historyRet.value == null ? [] : historyRet.value;
     let index = history.findIndex(
-      a => a.source_type == state.source_type && a.id == state.source_id,
+      a => a.type == state.type && a.id == state.source_id,
     );
     let film = {
       id: state.source_id,
-      idx: state.source_type == 'teleplay' ? state.playDetail.idx : 1,
-      source_type: state.source_type,
+      idx: state.type == 'tv' ? state.playDetail.idx : 1,
+      type: state.type,
       name: state.playDetail.name,
       pic: state.playDetail.pic,
       play_time: currentTime,
@@ -49,15 +49,15 @@ class Player extends React.Component {
     await setItem('history', history);
   }
 
-  async playNextPrev(type) {
+  async playNextPrev(action) {
     let state = this.state;
-    if (state.source_type != 'teleplay') {
+    if (state.type != 'tv') {
       return;
     }
     let params = {
       id: state.playDetail.tv_id,
     };
-    if (type == 'next') {
+    if (action == 'next') {
       if (state.playDetail.idx == state.playDetail.count) {
         let msg = `抱歉电视剧没有下一集了哟~`;
         this.hint.show(msg);
@@ -66,7 +66,7 @@ class Player extends React.Component {
       params.idx = state.playDetail.idx + 1;
       this.hint.show('正在为您加载下一集');
     }
-    if (type == 'prev') {
+    if (action == 'prev') {
       if (state.playDetail.idx == 1) {
         let msg = `已经是第一集了哟~`;
         this.hint.show(msg);
@@ -143,16 +143,16 @@ class Player extends React.Component {
   }
 
   async componentDidMount() {
-    let { source_type, id, idx, play_time } = this.props.route.params;
+    let { type, id, idx, play_time } = this.props.route.params;
     let state = this.state;
-    state.source_type = source_type;
+    state.type = type;
     state.source_id = id;
     state.play_time = play_time;
     // this.touchView.focus();
     // console.log(play_time);
     this.enableTVEventHandler();
     try {
-      if (source_type == 'teleplay') {
+      if (type == 'tv') {
         await this.getTvPlay({ id, idx });
       } else {
         await this.getMovieDetail({ id });
@@ -175,7 +175,7 @@ class Player extends React.Component {
   }
   onEnd() {
     let that = this;
-    if (this.state.source_type == 'teleplay') {
+    if (this.state.type == 'tv') {
       this.playNextPrev('next');
     } else {
       this.hint.show('影片播放结束，正在返回首页。。。');

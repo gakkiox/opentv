@@ -2,112 +2,38 @@ import React from 'react';
 import {Text, View, Image, StyleSheet, ScrollView} from 'react-native';
 import {getTeleplayInfo, getMovieInfo} from '@/api/index';
 import Btn from '@/pages/components/btn';
-import Hint from '@/pages/components/hint.js';
+import {BlurView} from '@react-native-community/blur';
 
 class Detail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      film_data: {teleplay_list: []},
-      source_type: 'teleplay',
+      detail: {teleplay_list: []},
+      type: 'tv',
     };
     this.tvPicPrefix = global.base.public_tv_img;
     this.moviePicPrefix = global.base.public_movie_img;
   }
   async componentDidMount() {
-    try {
-      let state = this.state;
-      let {source_type, id} = this.props.route.params;
-      state.source_type = source_type;
-      if (source_type == 'teleplay') {
-        let ret = await getTeleplayInfo({id});
-        if (ret.code != 200) {
-          this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
-          return;
-        }
-        state.film_data = ret.data;
-      } else {
-        let ret2 = await getMovieInfo({id});
-        if (ret2.code != 200) {
-          this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
-          return;
-        }
-        state.film_data = ret2.data;
-      }
-      this.hint.show('获取数据成功');
-      this.setState(state);
-    } catch (e) {
-      let msg = `获取影视详细信息失败`;
-      this.hint.show(msg, 'red');
-      console.log(e, msg);
+    let state = this.state;
+    let {type, id} = this.props.route.params;
+    let ret = {code: 400};
+    if (type == 'tv') {
+      ret = await getTeleplayInfo({id});
+    } else {
+      ret = await getMovieInfo({id});
     }
-  }
-  renderPlaylist() {
-    let {film_data, source_type} = this.state;
-    if (source_type == 'teleplay') {
-      return (
-        <View>
-          <Text style={{marginBottom: 10, fontSize: 18, color: '#fff'}}>
-            剧集
-          </Text>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <View style={{flexDirection: 'row'}}>
-              {film_data.teleplay_list.map((item, index) => {
-                return (
-                  <View style={{marginRight: 4}} key={index}>
-                    <Btn
-                      title={`${index + 1}`}
-                      borderRadius={20}
-                      paddingVertical={5}
-                      paddingHorizontal={20}
-                      marginRight={6}
-                      backgroundColor="rgba(255,255,255,0.6)"
-                      color="#297FF8"
-                      activeColor="red"
-                      onPress={() =>
-                        this.props.navigation.navigate('Player', {
-                          id: film_data.id,
-                          idx: item.idx,
-                          source_type,
-                          play_time: 0
-                        })
-                      }
-                    />
-                  </View>
-                );
-              })}
-            </View>
-          </ScrollView>
-        </View>
-      );
+    if (ret.code != 200) {
+      this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
+      return;
     }
-    return (
-      <View style={{width: '100%', alignItems: 'flex-start'}}>
-        <Btn
-          borderRadius={3}
-          paddingVertical={10}
-          paddingHorizontal={25}
-          marginRight={6}
-          title="立即播放"
-          backgroundColor="rgba(255,255,255,0.6)"
-          color="#297FF8"
-          activeColor="red"
-          icon="play"
-          iconSize={24}
-          onPress={() =>
-            this.props.navigation.navigate('Player', {
-              id: film_data.id,
-              source_type,
-              idx: 0,
-              play_time: 0
-            })
-          }
-        />
-      </View>
-    );
+    state.type = type;
+    state.detail = ret.data;
+    this.setState(state);
   }
+
   render() {
-    let {film_data, source_type} = this.state;
+    let state = this.state;
     return (
       <View
         style={{
@@ -116,83 +42,132 @@ class Detail extends React.Component {
           position: 'relative',
           backgroundColor: 'black',
         }}>
-        <Hint ref={e => (this.hint = e)} />
-        <View style={[styles.container]}>
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              width: '100%',
-              paddingHorizontal: 20,
-              marginVertical: 10,
-            }}>
-            <Btn
-              borderRadius={20}
-              paddingVertical={5}
-              paddingHorizontal={20}
-              backgroundColor="rgba(255,255,255,0.6)"
-              title="返回首页"
-              color="#297FF8"
-              activeColor="red"
-              onPress={() => this.props.navigation.goBack()}
-            />
-          </View>
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              marginBottom: 10,
-              paddingHorizontal: 20,
-              width: '100%',
-            }}>
-            <View style={{marginRight: 10}}>
+        <View
+          style={{
+            width: '100%',
+            padding: 30,
+            position: 'relative',
+            zIndex: 10,
+          }}>
+          <View style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
+            <View style={{flex: 1}}>
+              <View>
+                <Text style={{color: '#fff', fontSize: 30}}>
+                  {state.detail.name}
+                </Text>
+              </View>
+              <View style={{marginTop: 15}}>
+                <Text style={{color: '#fff', fontSize: 12}}>
+                  添加日期：2023年4月20日
+                </Text>
+              </View>
+              <View
+                style={{marginTop: 15, display: 'flex', flexDirection: 'row'}}>
+                <Text style={{color: '#FCC900', fontSize: 12, marginRight: 14}}>
+                  评分：{state.detail.score}
+                </Text>
+                <Text style={{color: '#fff', fontSize: 12, marginRight: 14}}>
+                  分类：{state.detail.classify}
+                </Text>
+                <Text style={{color: '#fff', fontSize: 12, marginRight: 14}}>
+                  演员：{state.detail.actors}
+                </Text>
+              </View>
+              <View style={{marginTop: 15}}>
+                <Text style={{color: '#fff', fontSize: 12}}>
+                  剧情简介：{state.detail.desc}
+                </Text>
+              </View>
+              <View style={{marginTop: 15, width: 120, ...styles.flexCenter}}>
+                <Btn
+                  style={{
+                    width: 120,
+                    height: 60,
+                    borderRadius: 4,
+                    ...styles.flexCenter,
+                    flexDirection: 'row',
+                    backgroundColor: '#fff',
+                    color: '#59C381',
+                  }}
+                  activeStyle={{
+                    backgroundColor: '#59C381',
+                    color: '#fff',
+                  }}
+                  icon="play"
+                  iconStyle={{fontSize: 30, color: '#59C381'}}
+                  onPress={() => {
+                    this.props.navigation.navigate('Player', {
+                      type: state.type,
+                      id: state.detail.id,
+                      idx: 1,
+                      play_time: 0,
+                    });
+                  }}
+                />
+                <Text>播放</Text>
+              </View>
+            </View>
+            <View style={{width: 155, height: 220, marginLeft: 20}}>
               <Image
-                style={{width: 180, height: 250, borderRadius: 5}}
+                style={{width: '100%', height: '100%'}}
                 source={{
                   uri:
-                    (source_type == 'teleplay'
+                    (state.type == 'tv'
                       ? this.tvPicPrefix
-                      : this.moviePicPrefix) + film_data.pic,
+                      : this.moviePicPrefix) + state.detail.pic,
                 }}
               />
             </View>
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: 'rgba(255, 255,255, 0.6)',
-                padding: 10,
-                borderRadius: 5,
-              }}>
-              <Text style={{color: 'black', fontSize: 22}}>
-                {film_data.name}
-              </Text>
-              <Text style={{color: 'black', fontSize: 14}}>
-                {this.props.route.params.source_type == 'teleplay'
-                  ? '电视剧'
-                  : '电影'}
-              </Text>
-              <Text style={{color: 'black', fontSize: 14}}>
-                分类：{film_data.classify}
-              </Text>
-              <Text style={{color: 'black', fontSize: 14}}>
-                演员：{film_data.actors}
-              </Text>
-              <Text style={{color: 'black', fontSize: 14}}>
-                豆瓣评分：{film_data.score}
-              </Text>
-              <Text style={{fontSize: 12, color: 'black'}}>
-                简介：{film_data.desc}
-              </Text>
-            </View>
           </View>
-          <View style={{width: '100%', paddingHorizontal: 20}}>
-            {this.renderPlaylist()}
-          </View>
+          {(() => {
+            if (state.type == 'tv') {
+              return (
+                <View style={{marginTop: 15}}>
+                  <Text>剧集列表</Text>
+                  <ScrollView
+                    style={{marginTop: 10}}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal={true}>
+                    {state.detail.teleplay_list.map((itm, idx) => {
+                      return (
+                        <Btn
+                          style={{
+                            width: 80,
+                            height: 30,
+                            borderRadius: 4,
+                            marginRight: 8,
+                            ...styles.flexCenter,
+                            backgroundColor: '#fff',
+                            color: '#59C381',
+                          }}
+                          key={idx}
+                          onPress={() => {
+                            this.props.navigation.navigate('Player', {
+                              type: state.type,
+                              id: state.detail.id,
+                              idx: itm.idx,
+                              play_time: 0,
+                            });
+                          }}
+                          activeStyle={{
+                            backgroundColor: '#59C381',
+                            color: '#fff',
+                          }}
+                          title={`第${itm.idx}集`}
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              );
+            }
+          })()}
         </View>
-        <View style={[styles.fullScreen, {zIndex: 1}]}>
+        <View style={[{zIndex: 1}, styles.absolute]}>
           <Image
-            style={{width: '100%', height: '100%', opacity: 0.7}}
+            style={{width: '100%', height: '100%', opacity: 0.6}}
             source={require('@/assets/detail.jpg')}
+            blurRadius={4}
           />
         </View>
       </View>
@@ -200,15 +175,19 @@ class Detail extends React.Component {
   }
 }
 var styles = StyleSheet.create({
-  container: {
-    height: '100%',
-    width: '100%',
+  flexCenter: {
     display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-    zIndex: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fullScreen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  absolute: {
     position: 'absolute',
     top: 0,
     left: 0,

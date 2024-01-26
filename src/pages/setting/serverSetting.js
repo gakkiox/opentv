@@ -105,19 +105,36 @@ class Setting extends React.Component {
               </View>
               <View style={{flexDirection: 'row'}}>
                 <Btn
-                  paddingHorizontal={20}
-                  paddingVertical={8}
-                  backgroundColor="black"
+                  style={{
+                    width: 100,
+                    height: 35,
+                    borderRadius: 4,
+                    marginRight: 20,
+                    ...styles.flexCenter,
+                    backgroundColor: '#fff',
+                    color: '#59C381',
+                  }}
                   onPress={this.changeUrl.bind(this)}
-                  color="white"
+                  activeStyle={{
+                    backgroundColor: '#59C381',
+                    color: '#fff',
+                  }}
                   title="确认修改"
                 />
                 <Btn
-                  paddingHorizontal={20}
-                  paddingVertical={8}
-                  backgroundColor="black"
+                  style={{
+                    width: 100,
+                    height: 35,
+                    borderRadius: 4,
+                    ...styles.flexCenter,
+                    backgroundColor: '#fff',
+                    color: '#59C381',
+                  }}
                   onPress={this.restoreDefault.bind(this)}
-                  color="white"
+                  activeStyle={{
+                    backgroundColor: '#59C381',
+                    color: '#fff',
+                  }}
                   title="恢复默认"
                 />
               </View>
@@ -150,6 +167,11 @@ var styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
+  },
+  flexCenter: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default Setting;
