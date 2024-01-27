@@ -116,7 +116,7 @@ class List extends React.Component {
         }
         onPress={() => {
           this.props.navigation.navigate('Detail', {
-            type,
+            type: source_type,
             id: itm.id,
           });
         }}
@@ -131,7 +131,8 @@ class List extends React.Component {
     }
     if (state.classify != null) {
       title = state.classify;
-    }
+    }    
+
     function renderHeader() {
       return (
         <View style={{paddingTop: 30, paddingLeft: 10}}>
