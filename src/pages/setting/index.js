@@ -8,7 +8,7 @@ import {
   ToastAndroid,
 } from 'react-native';
 import Cell from './components/cell.js';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {clear} from '@/utils/storage';
 import Hint from '@/pages/components/hint.js';
 import CodePush from 'react-native-code-push';
@@ -21,27 +21,27 @@ class Setting extends React.Component {
     };
     this.cellData = {
       setting: {
-        name: 'settings',
+        name: 'settings-outline',
         text: '设置页面',
       },
       serverSetting: {
-        name: 'server',
+        name: 'finger-print-outline',
         text: '重新设置服务器IP、端口',
       },
       playTest: {
-        name: 'film',
+        name: 'film-outline',
         text: '测试视频播放',
       },
       restoreDefault: {
-        name: 'framer',
+        name: 'extension-puzzle-outline',
         text: '恢复默认',
       },
       checkUpdate: {
-        name: 'sunset',
+        name: 'construct-outline',
         text: '检查更新',
       },
       otherSetting: {
-        name: 'sliders',
+        name: 'cog-outline',
         text: '设置其他内容',
       },
     };

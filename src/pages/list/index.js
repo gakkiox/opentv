@@ -25,7 +25,7 @@ class List extends React.Component {
       offset: 0,
       type: 'tv',
       query: {},
-
+      classify: null,
     };
     this.tvPicPrefix = global.base.public_tv_img;
     this.moviePicPrefix = global.base.public_movie_img;
@@ -33,36 +33,40 @@ class List extends React.Component {
   }
   async componentDidMount() {
     let state = this.state;
-    let {type, classify} = this.props.route.params;
-    if(classify !='none'){
-      state.query = {name: "classify", value: classify}
+    let {type} = this.props.route.params;
+    if (type.split('_').length > 1) {
+      state.classify = type.split('_')[1];
     }
-    let ret = {code: 400};
-    if (type == 'tv') {
-      ret = await getTeleplayList({
-        limit: state.limit,
-        offset: 0,
-        query: state.query 
-      });
+    try {
+      let ret = {code: 400};
+      if (type == 'movie') {
+        ret = await getMovieList({
+          limit: state.limit,
+          offset: 0,
+        });
+      } else {
+        let body = {
+          limit: state.limit,
+          offset: 0,
+        };
+        if (state.classify != null) {
+          body.query = {name: 'classify', value: state.classify};
+        }
+        ret = await getTeleplayList(body);
+      }
+      if (ret.code != 200) {
+        this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
+        return;
+      }
+      state.type = type;
+      state.list = ret.data.rows;
+      state.count = ret.data.count;
+      this.setState(state);
+    } catch (e) {
+      let msg = `获取数据失败，请检查服务器设置或稍后重试`;
+      this.hint.show(msg, 'red');
+      console.log(msg, e);
     }
-    if (type == 'movie') {
-      ret = await getMovieList({
-        limit: state.limit,
-        offset: 0,
-        query: state.query
-      });
-    }
-    if (ret.code != 200) {
-      this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
-      return;
-    }
-    // console.log(ret);
-
-    state.type = type;
-    state.classify = classify;
-    state.list = ret.data.rows;
-    state.count = ret.data.count;
-    this.setState(state);
   }
   async endReached() {
     let state = this.state;
@@ -71,19 +75,21 @@ class List extends React.Component {
     }
     try {
       ++state.offset;
-      if (state.type == 'tv') {
-        let ret = await getTeleplayList({
-          limit: state.limit,
-          offset: state.offset * state.limit,
-          query: state.query,
-        });
-        state.list = state.list.concat(ret.data.rows);
-      } else {
+      if (state.type == 'movie') {
         let ret = await getMovieList({
           limit: state.limit,
           offset: state.offset * state.limit,
-          query: state.query,
         });
+        state.list = state.list.concat(ret.data.rows);
+      } else {
+        let body = {
+          limit: state.limit,
+          offset: state.offset * state.limit,
+        };
+        if (state.classify != null) {
+          body.query = {name: 'classify', value: state.classify};
+        }
+        let ret = await getTeleplayList(body);
         state.list = state.list.concat(ret.data.rows);
       }
       this.setState(state);
@@ -95,12 +101,19 @@ class List extends React.Component {
   }
   renderItem(itm, idx) {
     let {type} = this.state;
+    let source_type = type;
+    if (type.split('_').length > 1) {
+      source_type = 'tv';
+    }
     return (
       <TouchableItem
         title={itm.name}
         key={idx}
         score={itm.score}
-        uri={(type == 'tv' ? this.tvPicPrefix : this.moviePicPrefix) + itm.pic}
+        uri={
+          (source_type == 'tv' ? this.tvPicPrefix : this.moviePicPrefix) +
+          itm.pic
+        }
         onPress={() => {
           this.props.navigation.navigate('Detail', {
             type,
@@ -112,10 +125,17 @@ class List extends React.Component {
   }
   render() {
     let state = this.state;
+    let title = '电视剧';
+    if (state.type == 'movie') {
+      title = '电影';
+    }
+    if (state.classify != null) {
+      title = state.classify;
+    }
     function renderHeader() {
       return (
         <View style={{paddingTop: 30, paddingLeft: 10}}>
-          <Text style={{color: '#fff', fontSize: 30}}>电影</Text>
+          <Text style={{color: '#fff', fontSize: 30}}>{title}</Text>
         </View>
       );
     }

@@ -10,6 +10,7 @@ import {
 } from '@/api/index';
 import TouchableItem from '@/pages/components/TouchableItem';
 import {getItem} from '@/utils/storage';
+import Hint from '@/pages/components/hint.js';
 
 const colorList = [
   ['#196B0B', '#5FC749'],
@@ -42,6 +43,7 @@ class Library extends React.Component {
       let ret4 = await getMovieList({limit: 16, offset: 0});
       let ret5 = await getLastAdd();
       if (ret1.code != 200) {
+        this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
         console.log(ret1);
       }
       let historyRet = await getItem('history');
@@ -51,7 +53,9 @@ class Library extends React.Component {
       state.movieList = ret4.data.rows;
       this.setState(state);
     } catch (e) {
-      console.log(e);
+      let msg = `获取数据失败，请检查服务器设置或稍后重试`;
+      this.hint.show(msg, 'red');
+      console.log(msg, e);
     }
   }
   render() {
@@ -65,15 +69,16 @@ class Library extends React.Component {
       },
     ];
     let arr2 = [
-      {title: '最近添加', icon: 'check-circle'},
-      {title: '最近播放', icon: 'aperture'},
-      {title: '电视剧', icon: 'monitor', type: 'tv', classify: 'none'},
-      {title: '电影', icon: 'film', type: 'movie', classify: 'none'},
-      {title: '综艺', icon: 'coffee', type: 'tv', classify: '综艺'},
-      {title: '动漫', icon: 'instagram', type: 'tv', classify: '动漫'},
+      {title: '最近添加', icon: 'timer-outline'},
+      {title: '最近播放', icon: 'walk-outline'},
+      {title: '电视剧', icon: 'tv-outline', type: 'tv'},
+      {title: '电影', icon: 'videocam-outline', type: 'movie'},
+      {title: '综艺', icon: 'color-palette-outline', type: 'classify_综艺'},
+      {title: '动漫', icon: 'planet-outline', type: 'classify_动漫'},
     ];
     return (
       <View style={{width: '100%', paddingBottom: 30}}>
+        <Hint ref={e => (this.hint = e)} />
         <View
           style={[styles.flexCenter, {marginTop: 10, flexDirection: 'row'}]}>
           {arr1.map((itm, idx) => {
@@ -103,7 +108,7 @@ class Library extends React.Component {
             {arr2.map((itm, idx) => {
               return (
                 <TouchableItem
-                  style={{width: 140, height: 80}}
+                  style={{width: 145, height: 85}}
                   title={itm.title}
                   icon={itm.icon}
                   key={idx}
@@ -111,7 +116,6 @@ class Library extends React.Component {
                     if (idx == 0 || idx == 1) return;
                     this.props.nav.navigate('List', {
                       type: itm.type,
-                      classify: itm.classify,
                     });
                   }}
                   colors={colorList[idx % colorList.length]}
@@ -134,7 +138,6 @@ class Library extends React.Component {
                     {state.historyList.map((itm, idx) => {
                       return (
                         <TouchableItem
-                          style={{width: 140, height: 80}}
                           title={itm.name}
                           key={idx}
                           onPress={() => {
@@ -159,34 +162,42 @@ class Library extends React.Component {
             }
           })()}
 
-          <View style={{paddingVertical: 10}}>
-            <Text>最近添加</Text>
-          </View>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            style={{marginTop: 10}}>
-            {state.lastList.map((itm, idx) => {
+          {(() => {
+            if (state.lastList.length > 0) {
               return (
-                <TouchableItem
-                  title={itm.name}
-                  key={idx}
-                  score={itm.score}
-                  onPress={() => {
-                    this.props.nav.navigate('Detail', {
-                      type: itm.type,
-                      id: itm.id,
-                    });
-                  }}
-                  uri={
-                    (itm.type == 'tv'
-                      ? this.tvPicPrefix
-                      : this.moviePicPrefix) + itm.pic
-                  }
-                />
+                <View>
+                  <View style={{paddingVertical: 10}}>
+                    <Text>最近添加</Text>
+                  </View>
+                  <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    horizontal={true}
+                    style={{marginTop: 10}}>
+                    {state.lastList.map((itm, idx) => {
+                      return (
+                        <TouchableItem
+                          title={itm.name}
+                          key={idx}
+                          score={itm.score}
+                          onPress={() => {
+                            this.props.nav.navigate('Detail', {
+                              type: itm.type,
+                              id: itm.id,
+                            });
+                          }}
+                          uri={
+                            (itm.type == 'tv'
+                              ? this.tvPicPrefix
+                              : this.moviePicPrefix) + itm.pic
+                          }
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                </View>
               );
-            })}
-          </ScrollView>
+            }
+          })()}
 
           <View style={{paddingVertical: 10}}>
             <Text>电视剧</Text>
@@ -212,7 +223,7 @@ class Library extends React.Component {
               style={{width: 115, height: 163}}
               title="查看更多"
               colors={['#c44601', '#f57600']}
-              icon="inbox"
+              icon="albums-outline"
               onPress={() => {
                 this.props.nav.navigate('List', {
                   type: 'tv',
@@ -247,9 +258,10 @@ class Library extends React.Component {
             })}
             <TouchableItem
               style={{width: 115, height: 163}}
-              colors={['#00bf7d', '#00b4c5']}a
+              colors={['#00bf7d', '#00b4c5']}
+              a
               title="查看更多"
-              icon="inbox"
+              icon="albums-outline"
               onPress={() => {
                 this.props.nav.navigate('List', {
                   type: 'movie',

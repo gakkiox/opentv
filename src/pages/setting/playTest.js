@@ -14,21 +14,21 @@ class PlayTest extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      url: "https://www.w3schools.com/html/movie.mp4",
-      playCurrent: "mp4"
+      url: 'https://www.w3schools.com/html/movie.mp4',
+      playCurrent: 'mp4',
     };
   }
-  playMp4(){
+  playMp4() {
     this.setState({
-      url: "https://www.w3schools.com/html/movie.mp4",
-      playCurrent: "mp4"
-    })
+      url: 'https://www.w3schools.com/html/movie.mp4',
+      playCurrent: 'mp4',
+    });
   }
-  playM3u8(){
+  playM3u8() {
     this.setState({
-      url: "http://kbs-dokdo.gscdn.com/dokdo_300/_definst_/dokdo_300.stream/playlist.m3u8",
-      playCurrent: "m3u8"
-    })
+      url: 'http://kbs-dokdo.gscdn.com/dokdo_300/_definst_/dokdo_300.stream/playlist.m3u8',
+      playCurrent: 'm3u8',
+    });
   }
   async componentDidMount() {}
   componentWillUnmount() {}
@@ -53,32 +53,49 @@ class PlayTest extends React.Component {
           <View style={{marginBottom: 20}}>
             <Text style={{color: 'white', fontSize: 30}}>播放测试</Text>
           </View>
-          <View style={{flexDirection: "row", marginBottom: 10}}>
+          <View style={{flexDirection: 'row', marginBottom: 10, justifyContent: 'center'}}>
             <Btn
-              borderRadius={3}
-              paddingVertical={10}
-              paddingHorizontal={25}
-              marginRight={6}
-              title="MP4测试"
-              backgroundColor="rgba(255,255,255,0.6)"
-              color="#297FF8"
-              activeColor="red"
-              icon={playCurrent=='mp4'?'play':'none'}
-              iconSize={24}
+              style={{
+                width: 120,
+                height: 40,
+                borderRadius: 4,
+                ...styles.flexCenter,
+                flexDirection: 'row',
+                backgroundColor: 'transparent',
+                color: '#fff',
+                borderWidth: 3,
+                borderColor: '#fff',
+                marginRight: 20,
+              }}
               onPress={this.playMp4.bind(this)}
+              icon={playCurrent == 'mp4' ? 'play' : 'none'}
+              iconStyle={{fontSize: 18}}
+              activeStyle={{
+                backgroundColor: '#59C381',
+                color: '#fff',
+              }}
+              title="MP4测试"
             />
             <Btn
-              borderRadius={3}
-              paddingVertical={10}
-              paddingHorizontal={25}
-              marginRight={6}
-              title="M3U8测试"
-              backgroundColor="rgba(255,255,255,0.6)"
-              color="#297FF8"
-              activeColor="red"
-              icon={playCurrent=='m3u8'?'play':'none'}
-              iconSize={24}
+              style={{
+                width: 120,
+                height: 40,
+                borderRadius: 4,
+                ...styles.flexCenter,
+                flexDirection: 'row',
+                backgroundColor: 'transparent',
+                color: '#fff',
+                borderWidth: 3,
+                borderColor: '#fff',
+              }}
               onPress={this.playM3u8.bind(this)}
+              icon={playCurrent == 'm3u8' ? 'play' : 'none'}
+              iconStyle={{fontSize: 18}}
+              activeStyle={{
+                backgroundColor: '#59C381',
+                color: '#fff',
+              }}
+              title="M3U8测试"
             />
           </View>
           <View style={{flex: 1, alignItems: 'center'}}>
@@ -88,7 +105,7 @@ class PlayTest extends React.Component {
                 resizeMode="contain"
                 name="播放测试"
                 source={{
-                  uri:url,
+                  uri: url,
                 }}
               />
             </View>
@@ -111,6 +128,11 @@ var styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
+  },
+  flexCenter: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default PlayTest;

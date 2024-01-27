@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 import TouchableBase from '@/pages/components/TouchableBase';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
@@ -25,7 +25,7 @@ class TouchableItem extends TouchableBase {
     let height = style?.height ?? 163;
     return (
       <View
-        style={[styles.flexCenter, {width: width + 20, height: height + 44}]}>
+        style={[styles.flexCenter, {width: width + 20, height: height + 28}]}>
         <Animatable.View
           transition={['width', 'height']}
           duration={500}
@@ -99,6 +99,7 @@ class TouchableItem extends TouchableBase {
                     marginTop: 1,
                     height: 14,
                     overflow: 'hidden',
+                    color: is_focus ?"#59C381" : "#939CA2",
                   }}>
                   {title}
                 </Text>

@@ -111,8 +111,10 @@ class Setting extends React.Component {
                     borderRadius: 4,
                     marginRight: 20,
                     ...styles.flexCenter,
-                    backgroundColor: '#fff',
-                    color: '#59C381',
+                    backgroundColor: 'transparent',
+                    color: '#000',
+                    borderWidth: 3,
+                    borderColor: "#000"
                   }}
                   onPress={this.changeUrl.bind(this)}
                   activeStyle={{
@@ -127,8 +129,10 @@ class Setting extends React.Component {
                     height: 35,
                     borderRadius: 4,
                     ...styles.flexCenter,
-                    backgroundColor: '#fff',
-                    color: '#59C381',
+                    backgroundColor: 'transparent',
+                    color: '#000',
+                    borderWidth: 3,
+                    borderColor: "#000"
                   }}
                   onPress={this.restoreDefault.bind(this)}
                   activeStyle={{
