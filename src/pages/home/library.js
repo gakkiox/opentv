@@ -215,7 +215,7 @@ class Library extends React.Component {
               icon="inbox"
               onPress={() => {
                 this.props.nav.navigate('List', {
-                  type: 'movie',
+                  type: 'tv',
                   classify: 'none',
                 });
               }}
@@ -247,12 +247,12 @@ class Library extends React.Component {
             })}
             <TouchableItem
               style={{width: 115, height: 163}}
-              colors={['#00bf7d', '#00b4c5']}
+              colors={['#00bf7d', '#00b4c5']}a
               title="查看更多"
               icon="inbox"
               onPress={() => {
                 this.props.nav.navigate('List', {
-                  type: 'tv',
+                  type: 'movie',
                   classify: 'none',
                 });
               }}

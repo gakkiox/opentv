@@ -29,7 +29,7 @@ class Init extends React.Component {
   async initBaseUrl() {
     let url = 'http://192.168.1.220:7001';
     if (process.env.NODE_ENV == 'development') {
-      url = 'http://192.168.3.14:8440';
+      url = 'http://192.168.1.220:8440';
     }
     global.defaulturl = url;
     let urlRet = await getItem('baseurl');
