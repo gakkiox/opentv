@@ -11,7 +11,7 @@ class TouchableItem extends TouchableBase {
   }
   static defaultProps = {
     ...TouchableBase.defaultProps,
-    colors: ['rgba(0,0,0,0)', 'rgba(0,0,0,0)'],
+    colors: ['transparent', 'transparent'],
     title: 'none',
     icon: 'none',
     uri: 'none',
@@ -22,16 +22,16 @@ class TouchableItem extends TouchableBase {
     let {is_focus} = this.state;
     let {title, icon, uri, desc, colors, style, score} = this.props;
     let width = style?.width ?? 115;
-    let height = style?.height ?? 163;
+    let height = style?.height ?? 160;
     return (
       <View
-        style={[styles.flexCenter, {width: width + 20, height: height + 28}]}>
+        style={{width: width + 20, height: height + 35, ...styles.flexCenter}}>
         <Animatable.View
           transition={['width', 'height']}
           duration={500}
           style={{
             width: is_focus ? width + 12 : width,
-            height: is_focus ? height + 10 : height,
+            height: is_focus ? height + 8 : height,
             backgroundColor: '#4CBB46',
             borderRadius: 4,
             marginBottom: 1,
@@ -95,11 +95,11 @@ class TouchableItem extends TouchableBase {
               return (
                 <Text
                   style={{
-                    fontSize: 10,
+                    fontSize: 14,
                     marginTop: 1,
-                    height: 14,
+                    height: 20,
                     overflow: 'hidden',
-                    color: is_focus ?"#59C381" : "#939CA2",
+                    color: is_focus ? '#59C381' : '#fff',
                   }}>
                   {title}
                 </Text>

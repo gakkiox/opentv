@@ -3,7 +3,6 @@ import {View, StyleSheet, ScrollView, Image, FlatList} from 'react-native';
 import Btn from '@/pages/components/btn';
 import Library from '@/pages/home/library';
 
-
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +23,9 @@ class Home extends React.Component {
     });
     this.props.navigation.navigate(type);
   }
+  scrollToHandle(val) {
+    this.scrollView.scrollTo({x: val, y: 0, animated: true});
+  }
   render() {
     let state = this.state;
     return (
@@ -36,6 +38,7 @@ class Home extends React.Component {
         }}>
         <ScrollView
           style={{width: '100%', position: 'relative', zIndex: 10}}
+          ref={e => (this.scrollView = e)}
           showsVerticalScrollIndicator={false}>
           <View
             style={{
@@ -61,12 +64,7 @@ class Home extends React.Component {
                 activeStyle={{color: '#222'}}
                 ref={e => (this.btn1 = e)}
               />
-              <Btn
-                title="IPTV"
-                onPress={this.changeShow.bind(this, 'Iptv')}
-                style={{...styles.headBtn, ...styles.flexCenter}}
-                activeStyle={{color: '#222'}}
-              />
+
               <Btn
                 title="设置"
                 onPress={this.changeShow.bind(this, 'Setting')}
@@ -75,7 +73,10 @@ class Home extends React.Component {
               />
             </View>
           </View>
-          <Library nav={this.props.navigation} />
+          <Library
+            nav={this.props.navigation}
+            mainScrollTo={this.scrollToHandle.bind(this)}
+          />
         </ScrollView>
         <View
           style={{

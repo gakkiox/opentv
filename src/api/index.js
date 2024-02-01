@@ -80,3 +80,6 @@ export function getConfigSpace(data) {
 export function getLastAdd(data) {
   return post('/v1/app/film/last/add', data);
 }
+export function getRecommendRandom(data) {
+  return post('/v1/app/film/recommend/random', data);
+}

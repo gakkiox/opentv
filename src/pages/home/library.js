@@ -7,6 +7,7 @@ import {
   getTeleplayList,
   getMovieList,
   getLastAdd,
+  getRecommendRandom,
 } from '@/api/index';
 import TouchableItem from '@/pages/components/TouchableItem';
 import {getItem} from '@/utils/storage';
@@ -30,18 +31,58 @@ class Library extends React.Component {
       movieList: [],
       lastList: [],
       historyList: [],
+      recommendList: [],
     };
     this.tvPicPrefix = global.base.public_tv_img;
     this.moviePicPrefix = global.base.public_movie_img;
   }
+  headPressHandle(item, idx) {
+    let state = this.state;
+    if (idx == 0) {
+      if (state.historyList.length < 1) {
+        this.hint.show('在暂时没有观看记录~');
+        return;
+      }
+      this.props.mainScrollTo(80);
+      return;
+    }
+    if (idx == 1) {
+      if (state.lastList.length < 1) {
+        this.hint.show('在暂时没有最近添加的影视资源~');
+        return;
+      }
+      this.props.mainScrollTo(350);
+      return;
+    }
+    if (idx == 2) {
+      if (state.recommendList.length < 1) {
+        this.hint.show('在暂时没有随机推荐的影视资源~');
+        return;
+      }
+      this.props.mainScrollTo(520);
+      return;
+    }
+    this.props.nav.navigate('List', {
+      type: item.type,
+    });
+  }
   async componentDidMount() {
     let state = this.state;
     try {
-      let ret1 = await getTeleplayClassify({type: 'show'});
-      let ret2 = await getMovieClassify({type: 'show'});
-      let ret3 = await getTeleplayList({limit: 16, offset: 0});
-      let ret4 = await getMovieList({limit: 16, offset: 0});
+      let ret1 = await getTeleplayClassify({show: 'true'});
+      let ret2 = await getMovieClassify({show: 'true'});
+      let ret3 = await getTeleplayList({
+        limit: 16,
+        offset: 0,
+        query: {show: true},
+      });
+      let ret4 = await getMovieList({
+        limit: 16,
+        offset: 0,
+        query: {show: true},
+      });
       let ret5 = await getLastAdd();
+      let ret6 = await getRecommendRandom();
       if (ret1.code != 200) {
         this.hint.show('获取数据失败，请检查服务器设置或稍后重试');
         console.log(ret1);
@@ -51,6 +92,7 @@ class Library extends React.Component {
       state.lastList = ret5.data.rows;
       state.tvList = ret3.data.rows;
       state.movieList = ret4.data.rows;
+      state.recommendList = ret6.data.rows;
       this.setState(state);
     } catch (e) {
       let msg = `获取数据失败，请检查服务器设置或稍后重试`;
@@ -71,6 +113,7 @@ class Library extends React.Component {
     let arr2 = [
       {title: '最近添加', icon: 'timer-outline'},
       {title: '最近播放', icon: 'walk-outline'},
+      {title: '随机推荐', icon: 'thumbs-up-outline'},
       {title: '电视剧', icon: 'tv-outline', type: 'tv'},
       {title: '电影', icon: 'videocam-outline', type: 'movie'},
       {title: '综艺', icon: 'color-palette-outline', type: 'classify_综艺'},
@@ -112,12 +155,7 @@ class Library extends React.Component {
                   title={itm.title}
                   icon={itm.icon}
                   key={idx}
-                  onPress={() => {
-                    if (idx == 0 || idx == 1) return;
-                    this.props.nav.navigate('List', {
-                      type: itm.type,
-                    });
-                  }}
+                  onPress={this.headPressHandle.bind(this, itm, idx)}
                   colors={colorList[idx % colorList.length]}
                 />
               );
@@ -174,6 +212,43 @@ class Library extends React.Component {
                     horizontal={true}
                     style={{marginTop: 10}}>
                     {state.lastList.map((itm, idx) => {
+                      return (
+                        <TouchableItem
+                          title={itm.name}
+                          key={idx}
+                          score={itm.score}
+                          onPress={() => {
+                            this.props.nav.navigate('Detail', {
+                              type: itm.type,
+                              id: itm.id,
+                            });
+                          }}
+                          uri={
+                            (itm.type == 'tv'
+                              ? this.tvPicPrefix
+                              : this.moviePicPrefix) + itm.pic
+                          }
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              );
+            }
+          })()}
+
+          {(() => {
+            if (state.recommendList.length > 0) {
+              return (
+                <View>
+                  <View style={{paddingVertical: 10}}>
+                    <Text>随机推荐</Text>
+                  </View>
+                  <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    horizontal={true}
+                    style={{marginTop: 10}}>
+                    {state.recommendList.map((itm, idx) => {
                       return (
                         <TouchableItem
                           title={itm.name}

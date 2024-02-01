@@ -1,4 +1,12 @@
 {
   "name": "opentv",
-  "displayName": "opentv"
+  "displayName": "opentv",
+  "plugins": [
+    [
+      "@react-native-tvos/config-tv",
+      {
+        "showVerboseWarnings": true
+      }
+    ]
+  ]
 }
